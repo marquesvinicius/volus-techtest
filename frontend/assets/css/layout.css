@@ -12,15 +12,14 @@ body {
 
 /* Header */
 .header {
-    background: var(--bg-white);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+    background: var(--color-primary);
+    border-bottom: none;
+    box-shadow: 0 2px 8px rgba(28, 204, 103, 0.2);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -33,10 +32,9 @@ body {
 }
 
 .logo {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-    margin: 0;
+    height: 40px;
+    width: auto;
+    display: block;
 }
 
 /* Toggle Button (Mobile) */
@@ -55,11 +53,11 @@ body {
 }
 
 .sidebar-toggle:hover {
-    background: var(--bg-light);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-toggle:focus {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid white;
     outline-offset: 2px;
 }
 
@@ -67,7 +65,7 @@ body {
     display: block;
     width: 24px;
     height: 2px;
-    background: var(--text-primary);
+    background: white;
     position: relative;
     transition: background 0.3s ease-in-out;
 }
@@ -78,7 +76,7 @@ body {
     display: block;
     width: 24px;
     height: 2px;
-    background: var(--text-primary);
+    background: white;
     position: absolute;
     left: 0;
     transition: transform 0.3s ease-in-out, top 0.3s ease-in-out, bottom 0.3s ease-in-out;
@@ -195,13 +193,14 @@ body {
 }
 
 .btn-back {
-    color: var(--color-primary);
+    color: white;
     text-decoration: none;
     font-weight: var(--font-weight-medium);
+    transition: opacity var(--transition-base);
 }
 
 .btn-back:hover {
-    text-decoration: underline;
+    opacity: 0.85;
 }
 
 /* Sidebar Overlay (Mobile) */
