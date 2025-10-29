@@ -15,9 +15,11 @@ body {
     background: var(--bg-white);
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: var(--z-sticky);
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .header-content {
@@ -33,6 +35,7 @@ body {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary);
+    margin: 0;
 }
 
 /* Toggle Button (Mobile) */
@@ -40,48 +43,60 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
     border-radius: var(--border-radius-sm);
-    background: var(--bg-light);
+    background: transparent;
+    cursor: pointer;
     transition: var(--transition-base);
 }
 
 .sidebar-toggle:hover {
-    background: var(--border-color);
+    background: var(--bg-light);
+}
+
+.sidebar-toggle:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .toggle-icon {
+    display: block;
     width: 24px;
     height: 2px;
     background: var(--text-primary);
     position: relative;
-    transition: var(--transition-base);
+    transition: background 0.3s ease-in-out;
 }
 
 .toggle-icon::before,
 .toggle-icon::after {
     content: '';
-    position: absolute;
+    display: block;
     width: 24px;
     height: 2px;
     background: var(--text-primary);
-    transition: var(--transition-base);
+    position: absolute;
+    left: 0;
+    transition: transform 0.3s ease-in-out, top 0.3s ease-in-out, bottom 0.3s ease-in-out;
 }
 
 .toggle-icon::before {
-    top: -8px;
+    top: -7px;
 }
 
 .toggle-icon::after {
-    bottom: -8px;
+    bottom: -7px;
 }
 
 /* Layout Container */
 .layout {
     display: grid;
     grid-template-columns: 1fr;
-    min-height: calc(100vh - 65px);
+    min-height: 100vh;
+    padding-top: 65px;
 }
 
 /* Sidebar */
@@ -95,8 +110,9 @@ body {
     left: 0;
     bottom: 0;
     width: 280px;
-    z-index: var(--z-fixed);
+    z-index: 900;
     overflow-y: auto;
+    box-shadow: var(--shadow-lg);
 }
 
 .sidebar.active {
@@ -182,5 +198,45 @@ body {
 
 .btn-back:hover {
     text-decoration: underline;
+}
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 65px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 850;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.sidebar-overlay.is-visible {
+    display: block;
+    opacity: 1;
+}
+
+@media (min-width: 768px) {
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* Toggle animado quando sidebar está aberta */
+.sidebar-toggle[aria-expanded="true"] .toggle-icon {
+    background: transparent;
+}
+
+.sidebar-toggle[aria-expanded="true"] .toggle-icon::before {
+    top: 0;
+    transform: rotate(45deg);
+}
+
+.sidebar-toggle[aria-expanded="true"] .toggle-icon::after {
+    bottom: 0;
+    transform: rotate(-45deg);
 }
 
