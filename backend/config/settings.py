@@ -1,17 +1,16 @@
 """
-Django settings for Vólus TechTest project.
+Django settings para Prova Técnica Vólus.
 """
 
 from pathlib import Path
-import os
 
-# Build paths inside the project
+# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-volus-techtest-dev-only-2024'
+# SECURITY WARNING: chave secreta para desenvolvimento apenas
+SECRET_KEY = 'django-insecure-volus-techtest-dev-key-2024'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: não use debug=True em produção
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -35,7 +34,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.ExceptionHandlerMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -103,4 +101,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/products/'
 LOGOUT_REDIRECT_URL = '/login/'
-
