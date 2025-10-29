@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard Administrativo - Prova Técnica Vólus">
+    <title>Dashboard - Vólus TechTest</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+    
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">Dashboard Vólus</h1>
+            <button class="sidebar-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="toggle-icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Layout Principal -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item has-submenu">
+                        <a href="#produtos" class="nav-link">
+                            <span class="nav-icon">📦</span>
+                            <span class="nav-text">Produtos</span>
+                            <span class="nav-arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#lista">Lista de Produtos</a></li>
+                            <li><a href="#categorias">Categorias</a></li>
+                            <li><a href="#estoque">Controle de Estoque</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#relatorios" class="nav-link">
+                            <span class="nav-icon">📈</span>
+                            <span class="nav-text">Relatórios</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#configuracoes" class="nav-link">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Cards -->
+            <section class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Vendas Totais</h3>
+                        <span class="card-icon">💰</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-value">R$ 24.500,00</p>
+                        <p class="card-change positive">+12% vs mês anterior</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Produtos Vendidos</h3>
+                        <span class="card-icon">📦</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-value">1.234</p>
+                        <p class="card-change positive">+8% vs mês anterior</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Novos Clientes</h3>
+                        <span class="card-icon">👥</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-value">89</p>
+                        <p class="card-change negative">-3% vs mês anterior</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Taxa de Conversão</h3>
+                        <span class="card-icon">🎯</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-value">3.2%</p>
+                        <p class="card-change positive">+0.5% vs mês anterior</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section">
+                <div class="chart-container">
+                    <h2>Vendas por Categoria</h2>
+                    <canvas id="salesChart" aria-label="Gráfico de vendas por categoria"></canvas>
+                    <div id="chartTooltip" class="chart-tooltip" role="tooltip" aria-live="polite"></div>
+                </div>
+            </section>
+
+            <!-- Form Section -->
+            <section class="form-section">
+                <h2>Adicionar Novo Produto</h2>
+                <form id="productForm" class="product-form" novalidate>
+                    <div class="form-group">
+                        <label for="productCode">Código do Produto *</label>
+                        <input 
+                            type="text" 
+                            id="productCode" 
+                            name="productCode" 
+                            placeholder="ABC-123" 
+                            maxlength="10"
+                            required
+                            aria-describedby="codeHelp codeError"
+                        >
+                        <small id="codeHelp" class="form-help">Formato: ABC-123 (checksum obrigatório)</small>
+                        <span id="codeError" class="form-error" role="alert" aria-live="polite"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productName">Nome do Produto *</label>
+                        <input 
+                            type="text" 
+                            id="productName" 
+                            name="productName" 
+                            placeholder="Ex: Notebook Dell" 
+                            required
+                        >
+                        <span class="form-error" role="alert" aria-live="polite"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productPhone">Telefone de Contato</label>
+                        <input 
+                            type="tel" 
+                            id="productPhone" 
+                            name="productPhone" 
+                            placeholder="(00) 0 0000-0000"
+                            aria-describedby="phoneError"
+                        >
+                        <span id="phoneError" class="form-error" role="alert" aria-live="polite"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Preço (R$) *</label>
+                            <input 
+                                type="number" 
+                                id="productPrice" 
+                                name="productPrice" 
+                                placeholder="0.00" 
+                                step="0.01" 
+                                min="0.01" 
+                                required
+                            >
+                            <span class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productStock">Estoque *</label>
+                            <input 
+                                type="number" 
+                                id="productStock" 
+                                name="productStock" 
+                                placeholder="0" 
+                                min="0" 
+                                required
+                            >
+                            <span class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Adicionar Produto</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/chart-config.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/form-validation.js"></script>
+</body>
+</html>
+
