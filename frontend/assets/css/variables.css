@@ -1,6 +1,7 @@
 /**
- * Custom Properties - Variáveis CSS
+ * Custom Properties - Design System Vólus
  * Mobile-first com breakpoints personalizados
+ * Baseado na identidade visual da Vólus
  */
 
 :root {
@@ -10,11 +11,12 @@
     --bp-md: 992px;   /* Tablets landscape / Desktop pequeno */
     --bp-lg: 1280px;  /* Desktop grande */
     
-    /* Cores Principais */
-    --color-primary: #007bff;
-    --color-primary-dark: #0056b3;
-    --color-secondary: #6c757d;
-    --color-success: #28a745;
+    /* Cores Principais - Identidade Vólus */
+    --color-primary: #1CCC67;      /* Verde Vólus */
+    --color-primary-dark: #17A555; /* Verde Escuro (hover) */
+    --color-primary-light: #E8F8F0; /* Verde Claro (backgrounds) */
+    --color-secondary: #2c3e50;
+    --color-success: #1CCC67;
     --color-danger: #dc3545;
     --color-warning: #ffc107;
     --color-info: #17a2b8;
@@ -24,6 +26,7 @@
     --bg-white: #ffffff;
     --bg-dark: #2c3e50;
     --bg-light: #f8f9fa;
+    --bg-hover: rgba(28, 204, 103, 0.08); /* Verde Vólus com opacidade */
     
     /* Cores de Texto */
     --text-primary: #212529;
@@ -49,8 +52,8 @@
     --spacing-xl: 32px;
     --spacing-2xl: 48px;
     
-    /* Tipografia */
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Tipografia - Roboto (Vólus) */
+    --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --font-size-xs: 0.75rem;   /* 12px */
     --font-size-sm: 0.875rem;  /* 14px */
     --font-size-md: 1rem;      /* 16px */

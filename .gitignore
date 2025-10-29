@@ -34,9 +34,12 @@ db.sqlite3-journal
 # IDEs
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
+
+.obsidian/
 
 # OS
 .DS_Store
