@@ -11,26 +11,34 @@
     --bp-md: 992px;   /* Tablets landscape / Desktop pequeno */
     --bp-lg: 1280px;  /* Desktop grande */
     
-    /* Cores Principais - Identidade Vólus */
-    --color-primary: #1CCC67;      /* Verde Vólus */
-    --color-primary-dark: #17A555; /* Verde Escuro (hover) */
-    --color-primary-light: #E8F8F0; /* Verde Claro (backgrounds) */
-    --color-secondary: #2c3e50;
-    --color-success: #1CCC67;
+    /* Cores Principais - Paleta Vólus */
+    --emerald: #1ccc67;       /* Verde principal */
+    --seasalt: #fcfafa;       /* Background claro */
+    --mantis: #76c96e;        /* Verde claro/hover */
+    --davys-gray: #5e5e5e;    /* Cinza médio */
+    --jet: #333333;           /* Cinza escuro */
+    
+    /* Mapeamento funcional */
+    --color-primary: var(--emerald);
+    --color-primary-hover: var(--mantis);
+    --color-primary-dark: #17A555;
+    --color-secondary: var(--davys-gray);
+    --color-success: var(--emerald);
     --color-danger: #dc3545;
     --color-warning: #ffc107;
     --color-info: #17a2b8;
     
     /* Cores de Fundo */
-    --bg-body: #f5f5f5;
+    --bg-body: var(--seasalt);
     --bg-white: #ffffff;
-    --bg-dark: #2c3e50;
+    --bg-dark: var(--jet);
     --bg-light: #f8f9fa;
-    --bg-hover: rgba(28, 204, 103, 0.08); /* Verde Vólus com opacidade */
+    --bg-hover: rgba(28, 204, 103, 0.08);
+    --bg-card: var(--seasalt);
     
     /* Cores de Texto */
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
+    --text-primary: var(--jet);
+    --text-secondary: var(--davys-gray);
     --text-muted: #adb5bd;
     --text-white: #ffffff;
     
