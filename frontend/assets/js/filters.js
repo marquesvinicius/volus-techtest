@@ -14,39 +14,8 @@
 (function($) {
     'use strict';
 
-    // Dados estruturados dos filtros (dados estáticos para demonstração)
-    const filterData = {
-        'eletronicos': {
-            'Smartphones': ['iPhone', 'Samsung Galaxy', 'Xiaomi', 'Motorola'],
-            'Notebooks': ['MacBook', 'Dell', 'Lenovo', 'Asus'],
-            'Tablets': ['iPad', 'Samsung Tab', 'Kindle'],
-            'Acessórios': ['Mouse', 'Teclado', 'Fone', 'Webcam']
-        },
-        'livros': {
-            'Ficção': ['1984', 'O Hobbit', 'Harry Potter', 'Senhor dos Anéis'],
-            'Não-Ficção': ['Sapiens', 'Mindset', 'Inteligência Emocional'],
-            'Clássicos': ['Dom Casmurro', 'Machado de Assis', 'Hamlet'],
-            'Técnicos': ['Clean Code', 'JavaScript: The Good Parts', 'Design Patterns']
-        },
-        'moveis': {
-            'Sala': ['Sofá', 'Mesa de Centro', 'Estante', 'Poltrona'],
-            'Quarto': ['Cama', 'Guarda-Roupa', 'Criado-Mudo', 'Penteadeira'],
-            'Escritório': ['Mesa', 'Cadeira Ergonômica', 'Estante para Livros'],
-            'Cozinha': ['Mesa', 'Cadeiras', 'Armário', 'Balcão']
-        },
-        'roupas': {
-            'Masculino': ['Camiseta', 'Calça Jeans', 'Jaqueta', 'Tênis'],
-            'Feminino': ['Vestido', 'Blusa', 'Saia', 'Sapato'],
-            'Infantil': ['Conjunto', 'Pijama', 'Macacão', 'Shorts'],
-            'Acessórios': ['Mochila', 'Boné', 'Relógio', 'Óculos']
-        },
-        'alimentos': {
-            'Bebidas': ['Café', 'Chá', 'Suco', 'Água'],
-            'Doces': ['Chocolate', 'Biscoito', 'Bolo', 'Bala'],
-            'Salgados': ['Nuts', 'Chips', 'Biscoito Salgado'],
-            'Naturais': ['Granola', 'Mel', 'Castanhas', 'Frutas Secas']
-        }
-    };
+    // Dados estruturados dos filtros (serão carregados da API)
+    let filterData = {};
 
     // Estado dos filtros
     let selectedFilters = {
@@ -67,9 +36,66 @@
     const $resultsCount = $('#resultsCount');
 
     /**
+     * Carrega estrutura de categorias da API
+     */
+    async function loadCategoriesData() {
+        try {
+            const response = await fetch('/api/categories/');
+            const data = await response.json();
+            
+            // Converte estrutura da API para o formato interno
+            filterData = {};
+            data.categories.forEach(cat => {
+                filterData[cat.name] = {};
+                cat.subcategories.forEach(sub => {
+                    filterData[cat.name][sub.name] = sub.items;
+                });
+            });
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao carregar categorias:', error);
+            // Usa dados de exemplo em caso de erro
+            filterData = {
+                'eletronicos': {
+                    'Smartphones': ['iPhone 15 Pro', 'Smartphone Galaxy S23'],
+                    'Notebooks': ['MacBook Air M2', 'Notebook Dell Inspiron'],
+                    'Tablets': ['Tablet iPad Air'],
+                    'Acessórios': ['Mouse Logitech MX Master', 'Teclado Mecânico Keychron', 'Fone Sony WH-1000XM5']
+                },
+                'livros': {
+                    'Ficção': ['1984 - George Orwell', 'O Hobbit - J.R.R. Tolkien'],
+                    'Não-Ficção': ['Sapiens - Yuval Noah Harari', 'Mindset - Carol Dweck'],
+                    'Clássicos': ['Dom Casmurro - Machado de Assis'],
+                    'Técnicos': ['Clean Code - Robert Martin', 'JavaScript: The Good Parts']
+                },
+                'moveis': {
+                    'Sala': ['Sofá 3 Lugares Comfort', 'Mesa de Centro Moderna'],
+                    'Quarto': ['Cama Box Queen Size', 'Guarda-Roupa 6 Portas'],
+                    'Escritório': ['Mesa para Computador', 'Cadeira Ergonômica Premium']
+                },
+                'roupas': {
+                    'Masculino': ['Camiseta Básica Algodão', 'Calça Jeans Slim Fit'],
+                    'Feminino': ['Vestido Floral Verão', 'Blusa de Tricô Inverno'],
+                    'Infantil': ['Conjunto Infantil Mickey'],
+                    'Acessórios': ['Mochila Escolar Resistente']
+                },
+                'alimentos': {
+                    'Bebidas': ['Café Especial Torrado', 'Chá Verde Orgânico'],
+                    'Doces': ['Chocolate Belga 70% Cacau', 'Biscoito Integral Aveia'],
+                    'Salgados': ['Mix de Nuts Premium'],
+                    'Naturais': ['Granola Artesanal', 'Mel Orgânico Silvestre']
+                }
+            };
+            return false;
+        }
+    }
+
+    /**
      * Inicializa os filtros
      */
-    function initFilters() {
+    async function initFilters() {
+        await loadCategoriesData();
         populateCategories();
         attachEventListeners();
         console.log('✅ Filtros jQuery inicializados');

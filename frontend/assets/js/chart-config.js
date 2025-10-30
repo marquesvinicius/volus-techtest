@@ -10,10 +10,10 @@
 (function() {
     'use strict';
 
-    // Dados do gráfico
-    const categoryData = {
-        labels: ['Eletrônicos', 'Livros', 'Móveis', 'Roupas', 'Alimentos'],
-        values: [45000, 32000, 28000, 21000, 14000], // Total: 140000
+    // Dados do gráfico (serão carregados da API)
+    let categoryData = {
+        labels: [],
+        values: [],
         colors: [
             '#1CCC67', // Verde Vólus
             '#17A555', // Verde escuro
@@ -23,8 +23,8 @@
         ]
     };
 
-    // Calcula o total constante
-    const TOTAL_CONSTANT = categoryData.values.reduce((acc, val) => acc + val, 0);
+    // Total constante (será calculado após carregar dados)
+    let TOTAL_CONSTANT = 0;
 
     // Estado do gráfico
     let chartInstance = null;
@@ -32,14 +32,75 @@
     let isHovering = false;
 
     /**
+     * Carrega dados da API Django
+     */
+    async function loadChartData() {
+        try {
+            const response = await fetch('/api/products/');
+            const data = await response.json();
+            
+            // Agregar por categoria
+            const categoryTotals = {};
+            const categoryLabels = {
+                'eletronicos': 'Eletrônicos',
+                'livros': 'Livros',
+                'moveis': 'Móveis',
+                'roupas': 'Roupas',
+                'alimentos': 'Alimentos'
+            };
+            
+            data.products.forEach(product => {
+                const price = parseFloat(product.price);
+                if (!categoryTotals[product.category]) {
+                    categoryTotals[product.category] = 0;
+                }
+                categoryTotals[product.category] += price * product.stock;
+            });
+            
+            // Preenche arrays
+            categoryData.labels = [];
+            categoryData.values = [];
+            
+            Object.keys(categoryLabels).forEach(key => {
+                if (categoryTotals[key]) {
+                    categoryData.labels.push(categoryLabels[key]);
+                    categoryData.values.push(categoryTotals[key]);
+                }
+            });
+            
+            // Se não há dados, usa valores de exemplo
+            if (categoryData.values.length === 0) {
+                categoryData.labels = ['Eletrônicos', 'Livros', 'Móveis', 'Roupas', 'Alimentos'];
+                categoryData.values = [45000, 32000, 28000, 21000, 14000];
+            }
+            
+            TOTAL_CONSTANT = categoryData.values.reduce((acc, val) => acc + val, 0);
+            originalValues = [...categoryData.values];
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao carregar dados do gráfico:', error);
+            // Usa dados de exemplo em caso de erro
+            categoryData.labels = ['Eletrônicos', 'Livros', 'Móveis', 'Roupas', 'Alimentos'];
+            categoryData.values = [45000, 32000, 28000, 21000, 14000];
+            TOTAL_CONSTANT = categoryData.values.reduce((acc, val) => acc + val, 0);
+            originalValues = [...categoryData.values];
+            return false;
+        }
+    }
+
+    /**
      * Inicializa o gráfico
      */
-    function initChart() {
+    async function initChart() {
         const canvas = document.getElementById('salesChart');
         if (!canvas) {
             console.error('Canvas #salesChart não encontrado');
             return;
         }
+
+        // Carrega dados antes de criar o gráfico
+        await loadChartData();
 
         const ctx = canvas.getContext('2d');
 
