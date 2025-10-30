@@ -9,10 +9,17 @@
     // Elementos
     const sidebarToggle = document.querySelector('.sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
+    const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+    const layout = document.querySelector('.layout');
     const navItems = document.querySelectorAll('.nav-item.has-submenu');
+    const userProfileBtn = document.getElementById('userProfileBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
     
     // Estado
     let sidebarOpen = false;
+    let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    let userDropdownOpen = false;
     
     /**
      * Toggle da sidebar em mobile
@@ -91,6 +98,61 @@
     }
     
     /**
+     * Toggle do collapse da sidebar (Desktop)
+     */
+    function toggleSidebarCollapse() {
+        sidebarCollapsed = !sidebarCollapsed;
+        
+        sidebar.classList.toggle('collapsed', sidebarCollapsed);
+        layout.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+        
+        // Salvar preferência no localStorage
+        localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+    }
+    
+    /**
+     * Restaurar estado do collapse ao carregar
+     */
+    function restoreSidebarState() {
+        if (sidebarCollapsed && window.innerWidth >= 768) {
+            sidebar.classList.add('collapsed');
+            layout.classList.add('sidebar-collapsed');
+        }
+    }
+    
+    /**
+     * Toggle do dropdown do usuário
+     */
+    function toggleUserDropdown() {
+        userDropdownOpen = !userDropdownOpen;
+        
+        if (userProfileBtn) {
+            userProfileBtn.classList.toggle('active', userDropdownOpen);
+            userProfileBtn.setAttribute('aria-expanded', userDropdownOpen);
+        }
+    }
+    
+    /**
+     * Fechar dropdown ao clicar fora
+     */
+    function handleClickOutside(event) {
+        if (userProfileBtn && !userProfileBtn.contains(event.target) && userDropdownOpen) {
+            toggleUserDropdown();
+        }
+    }
+    
+    /**
+     * Logout do usuário
+     */
+    function handleLogout() {
+        if (confirm('Deseja realmente sair?')) {
+            // Aqui você faria o logout real
+            console.log('Logout realizado');
+            window.location.href = '/login'; // Redirecionar para login
+        }
+    }
+    
+    /**
      * Navegação por teclado (acessibilidade)
      */
     function handleKeyboard(event) {
@@ -98,12 +160,46 @@
         if (event.key === 'Escape' && sidebarOpen && window.innerWidth < 768) {
             toggleSidebar();
         }
+        
+        // ESC para fechar dropdown do usuário
+        if (event.key === 'Escape' && userDropdownOpen) {
+            toggleUserDropdown();
+        }
     }
     
     // Event Listeners
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', toggleSidebar);
     }
+    
+    // Collapse button (Desktop)
+    if (sidebarCollapseBtn) {
+        sidebarCollapseBtn.addEventListener('click', toggleSidebarCollapse);
+    }
+    
+    // Restaurar estado ao carregar
+    restoreSidebarState();
+    
+    // User dropdown toggle
+    if (userProfileBtn) {
+        userProfileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleUserDropdown();
+        });
+    }
+    
+    // Logout button
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Logout button mobile
+    if (logoutBtnMobile) {
+        logoutBtnMobile.addEventListener('click', handleLogout);
+    }
+    
+    // Click outside to close dropdown
+    document.addEventListener('click', handleClickOutside);
     
     // Submenu click handlers
     navItems.forEach(navItem => {

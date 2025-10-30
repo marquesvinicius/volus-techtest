@@ -7,6 +7,8 @@ __pycache__/
 env/
 venv/
 ENV/
+env.bak/
+venv.bak/
 build/
 develop-eggs/
 dist/
@@ -22,6 +24,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Django
 *.log
@@ -30,6 +33,7 @@ db.sqlite3
 db.sqlite3-journal
 /media
 /staticfiles
+/static
 
 # IDEs
 .vscode/
@@ -38,13 +42,30 @@ db.sqlite3-journal
 *.swp
 *.swo
 *~
+.project
+.pydevproject
+.settings/
 
 .obsidian/
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Environment
 .env
 .env.local
+.env.*.local
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/

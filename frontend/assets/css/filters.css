@@ -7,6 +7,9 @@
     padding: var(--spacing-xl);
     max-width: 1000px;
     margin: 0 auto;
+    min-height: calc(100vh - var(--header-height));
+    background: var(--bg-body);
+    padding-top: calc(var(--header-height) + var(--spacing-lg));
 }
 
 .filter-title {
@@ -34,7 +37,7 @@
 .search-input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(28, 204, 103, 0.1);
 }
 
 /* Filtros em Cascata (3 níveis) */
@@ -42,8 +45,9 @@
     background: var(--bg-white);
     border-radius: var(--border-radius);
     padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     margin-bottom: var(--spacing-xl);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .filter-level {
@@ -85,7 +89,7 @@
 .filter-select:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(28, 204, 103, 0.1);
 }
 
 .filter-select:disabled {
@@ -260,7 +264,8 @@
     background: var(--bg-white);
     border-radius: var(--border-radius);
     padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .results-container h3 {
@@ -308,7 +313,7 @@
 
 .result-item:hover {
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-    transform: translateX(4px);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
 }
 
