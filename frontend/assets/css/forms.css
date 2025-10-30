@@ -104,7 +104,8 @@
 
 /* Feedback visual único - borda com gradiente animado em erro */
 .form-group.error input,
-.form-group.error select {
+.form-group.error select,
+input.form-error-input {
     border: 2px solid transparent;
     background-image: linear-gradient(white, white),
                       linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
@@ -120,6 +121,50 @@
     50% {
         background-position: 100% 50%;
     }
+}
+
+/* Modo MALUQUICE - Animações de placeholder */
+@keyframes placeholderFade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes placeholderSlide {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+}
+
+@keyframes placeholderScale {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.placeholder-fade::placeholder {
+    animation: placeholderFade 0.3s ease forwards;
+}
+
+.placeholder-slide::placeholder {
+    animation: placeholderSlide 0.3s ease forwards;
+}
+
+.placeholder-scale::placeholder {
+    animation: placeholderScale 0.3s ease forwards;
 }
 
 .form-error {
