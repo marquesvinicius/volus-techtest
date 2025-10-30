@@ -1,0 +1,478 @@
+[
+  {
+    "model": "core.product",
+    "pk": 1,
+    "fields": {
+      "name": "Smartphone Galaxy S23",
+      "code": "ELE-120",
+      "price": "3499.00",
+      "category": "eletronicos",
+      "subcategory": "Smartphones",
+      "stock": 45,
+      "created_at": "2024-10-01T10:00:00Z",
+      "updated_at": "2024-10-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 2,
+    "fields": {
+      "name": "iPhone 15 Pro",
+      "code": "ELE-213",
+      "price": "7999.00",
+      "category": "eletronicos",
+      "subcategory": "Smartphones",
+      "stock": 32,
+      "created_at": "2024-10-02T11:00:00Z",
+      "updated_at": "2024-10-02T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 3,
+    "fields": {
+      "name": "Notebook Dell Inspiron",
+      "code": "ELE-306",
+      "price": "4299.00",
+      "category": "eletronicos",
+      "subcategory": "Notebooks",
+      "stock": 18,
+      "created_at": "2024-10-03T12:00:00Z",
+      "updated_at": "2024-10-03T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 4,
+    "fields": {
+      "name": "MacBook Air M2",
+      "code": "ELE-420",
+      "price": "9999.00",
+      "category": "eletronicos",
+      "subcategory": "Notebooks",
+      "stock": 12,
+      "created_at": "2024-10-04T13:00:00Z",
+      "updated_at": "2024-10-04T13:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 5,
+    "fields": {
+      "name": "Tablet iPad Air",
+      "code": "ELE-510",
+      "price": "5299.00",
+      "category": "eletronicos",
+      "subcategory": "Tablets",
+      "stock": 28,
+      "created_at": "2024-10-05T14:00:00Z",
+      "updated_at": "2024-10-05T14:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 6,
+    "fields": {
+      "name": "Mouse Logitech MX Master",
+      "code": "ELE-630",
+      "price": "549.00",
+      "category": "eletronicos",
+      "subcategory": "Acessórios",
+      "stock": 67,
+      "created_at": "2024-10-06T15:00:00Z",
+      "updated_at": "2024-10-06T15:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 7,
+    "fields": {
+      "name": "Teclado Mecânico Keychron",
+      "code": "ELE-702",
+      "price": "899.00",
+      "category": "eletronicos",
+      "subcategory": "Acessórios",
+      "stock": 43,
+      "created_at": "2024-10-07T16:00:00Z",
+      "updated_at": "2024-10-07T16:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 8,
+    "fields": {
+      "name": "Fone Sony WH-1000XM5",
+      "code": "ELE-822",
+      "price": "1899.00",
+      "category": "eletronicos",
+      "subcategory": "Acessórios",
+      "stock": 39,
+      "created_at": "2024-10-08T17:00:00Z",
+      "updated_at": "2024-10-08T17:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 9,
+    "fields": {
+      "name": "1984 - George Orwell",
+      "code": "LIV-120",
+      "price": "42.90",
+      "category": "livros",
+      "subcategory": "Ficção",
+      "stock": 125,
+      "created_at": "2024-10-09T10:00:00Z",
+      "updated_at": "2024-10-09T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 10,
+    "fields": {
+      "name": "O Hobbit - J.R.R. Tolkien",
+      "code": "LIV-213",
+      "price": "54.90",
+      "category": "livros",
+      "subcategory": "Ficção",
+      "stock": 98,
+      "created_at": "2024-10-10T11:00:00Z",
+      "updated_at": "2024-10-10T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 11,
+    "fields": {
+      "name": "Sapiens - Yuval Noah Harari",
+      "code": "LIV-303",
+      "price": "67.90",
+      "category": "livros",
+      "subcategory": "Não-Ficção",
+      "stock": 87,
+      "created_at": "2024-10-11T12:00:00Z",
+      "updated_at": "2024-10-11T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 12,
+    "fields": {
+      "name": "Mindset - Carol Dweck",
+      "code": "LIV-420",
+      "price": "48.90",
+      "category": "livros",
+      "subcategory": "Não-Ficção",
+      "stock": 72,
+      "created_at": "2024-10-12T13:00:00Z",
+      "updated_at": "2024-10-12T13:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 13,
+    "fields": {
+      "name": "Dom Casmurro - Machado de Assis",
+      "code": "LIV-501",
+      "price": "32.90",
+      "category": "livros",
+      "subcategory": "Clássicos",
+      "stock": 156,
+      "created_at": "2024-10-13T14:00:00Z",
+      "updated_at": "2024-10-13T14:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 14,
+    "fields": {
+      "name": "Clean Code - Robert Martin",
+      "code": "LIV-621",
+      "price": "89.90",
+      "category": "livros",
+      "subcategory": "Técnicos",
+      "stock": 64,
+      "created_at": "2024-10-14T15:00:00Z",
+      "updated_at": "2024-10-14T15:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 15,
+    "fields": {
+      "name": "JavaScript: The Good Parts",
+      "code": "LIV-711",
+      "price": "72.90",
+      "category": "livros",
+      "subcategory": "Técnicos",
+      "stock": 48,
+      "created_at": "2024-10-15T16:00:00Z",
+      "updated_at": "2024-10-15T16:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 16,
+    "fields": {
+      "name": "Sofá 3 Lugares Comfort",
+      "code": "MOV-120",
+      "price": "1899.00",
+      "category": "moveis",
+      "subcategory": "Sala",
+      "stock": 23,
+      "created_at": "2024-10-16T10:00:00Z",
+      "updated_at": "2024-10-16T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 17,
+    "fields": {
+      "name": "Mesa de Centro Moderna",
+      "code": "MOV-210",
+      "price": "599.00",
+      "category": "moveis",
+      "subcategory": "Sala",
+      "stock": 35,
+      "created_at": "2024-10-17T11:00:00Z",
+      "updated_at": "2024-10-17T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 18,
+    "fields": {
+      "name": "Cama Box Queen Size",
+      "code": "MOV-303",
+      "price": "2499.00",
+      "category": "moveis",
+      "subcategory": "Quarto",
+      "stock": 18,
+      "created_at": "2024-10-18T12:00:00Z",
+      "updated_at": "2024-10-18T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 19,
+    "fields": {
+      "name": "Guarda-Roupa 6 Portas",
+      "code": "MOV-411",
+      "price": "1799.00",
+      "category": "moveis",
+      "subcategory": "Quarto",
+      "stock": 14,
+      "created_at": "2024-10-19T13:00:00Z",
+      "updated_at": "2024-10-19T13:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 20,
+    "fields": {
+      "name": "Mesa para Computador",
+      "code": "MOV-522",
+      "price": "699.00",
+      "category": "moveis",
+      "subcategory": "Escritório",
+      "stock": 41,
+      "created_at": "2024-10-20T14:00:00Z",
+      "updated_at": "2024-10-20T14:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 21,
+    "fields": {
+      "name": "Cadeira Ergonômica Premium",
+      "code": "MOV-600",
+      "price": "1299.00",
+      "category": "moveis",
+      "subcategory": "Escritório",
+      "stock": 27,
+      "created_at": "2024-10-21T15:00:00Z",
+      "updated_at": "2024-10-21T15:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 22,
+    "fields": {
+      "name": "Camiseta Básica Algodão",
+      "code": "ROU-111",
+      "price": "49.90",
+      "category": "roupas",
+      "subcategory": "Masculino",
+      "stock": 234,
+      "created_at": "2024-10-22T10:00:00Z",
+      "updated_at": "2024-10-22T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 23,
+    "fields": {
+      "name": "Calça Jeans Slim Fit",
+      "code": "ROU-210",
+      "price": "189.90",
+      "category": "roupas",
+      "subcategory": "Masculino",
+      "stock": 156,
+      "created_at": "2024-10-23T11:00:00Z",
+      "updated_at": "2024-10-23T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 24,
+    "fields": {
+      "name": "Vestido Floral Verão",
+      "code": "ROU-303",
+      "price": "159.90",
+      "category": "roupas",
+      "subcategory": "Feminino",
+      "stock": 98,
+      "created_at": "2024-10-24T12:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 25,
+    "fields": {
+      "name": "Blusa de Tricô Inverno",
+      "code": "ROU-420",
+      "price": "129.90",
+      "category": "roupas",
+      "subcategory": "Feminino",
+      "stock": 112,
+      "created_at": "2024-10-25T13:00:00Z",
+      "updated_at": "2024-10-25T13:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 26,
+    "fields": {
+      "name": "Conjunto Infantil Mickey",
+      "code": "ROU-510",
+      "price": "89.90",
+      "category": "roupas",
+      "subcategory": "Infantil",
+      "stock": 87,
+      "created_at": "2024-10-26T14:00:00Z",
+      "updated_at": "2024-10-26T14:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 27,
+    "fields": {
+      "name": "Mochila Escolar Resistente",
+      "code": "ROU-621",
+      "price": "149.90",
+      "category": "roupas",
+      "subcategory": "Acessórios",
+      "stock": 145,
+      "created_at": "2024-10-27T15:00:00Z",
+      "updated_at": "2024-10-27T15:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 28,
+    "fields": {
+      "name": "Café Especial Torrado",
+      "code": "ALI-102",
+      "price": "34.90",
+      "category": "alimentos",
+      "subcategory": "Bebidas",
+      "stock": 256,
+      "created_at": "2024-10-28T10:00:00Z",
+      "updated_at": "2024-10-28T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 29,
+    "fields": {
+      "name": "Chá Verde Orgânico",
+      "code": "ALI-213",
+      "price": "28.90",
+      "category": "alimentos",
+      "subcategory": "Bebidas",
+      "stock": 189,
+      "created_at": "2024-10-28T11:00:00Z",
+      "updated_at": "2024-10-28T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 30,
+    "fields": {
+      "name": "Chocolate Belga 70% Cacau",
+      "code": "ALI-303",
+      "price": "18.90",
+      "category": "alimentos",
+      "subcategory": "Doces",
+      "stock": 342,
+      "created_at": "2024-10-28T12:00:00Z",
+      "updated_at": "2024-10-28T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 31,
+    "fields": {
+      "name": "Biscoito Integral Aveia",
+      "code": "ALI-411",
+      "price": "12.90",
+      "category": "alimentos",
+      "subcategory": "Doces",
+      "stock": 423,
+      "created_at": "2024-10-28T13:00:00Z",
+      "updated_at": "2024-10-28T13:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 32,
+    "fields": {
+      "name": "Mix de Nuts Premium",
+      "code": "ALI-501",
+      "price": "42.90",
+      "category": "alimentos",
+      "subcategory": "Salgados",
+      "stock": 198,
+      "created_at": "2024-10-28T14:00:00Z",
+      "updated_at": "2024-10-28T14:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 33,
+    "fields": {
+      "name": "Granola Artesanal",
+      "code": "ALI-621",
+      "price": "24.90",
+      "category": "alimentos",
+      "subcategory": "Naturais",
+      "stock": 267,
+      "created_at": "2024-10-28T15:00:00Z",
+      "updated_at": "2024-10-28T15:00:00Z"
+    }
+  },
+  {
+    "model": "core.product",
+    "pk": 34,
+    "fields": {
+      "name": "Mel Orgânico Silvestre",
+      "code": "ALI-702",
+      "price": "38.90",
+      "category": "alimentos",
+      "subcategory": "Naturais",
+      "stock": 145,
+      "created_at": "2024-10-28T16:00:00Z",
+      "updated_at": "2024-10-28T16:00:00Z"
+    }
+  }
+]
