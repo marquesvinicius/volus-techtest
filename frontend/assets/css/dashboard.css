@@ -623,19 +623,41 @@
 .chart-tooltip {
     position: absolute;
     background: var(--bg-dark);
-    color: var(--text-white);
+    color: white;
     padding: var(--spacing-md);
     border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     pointer-events: none;
     opacity: 0;
-    transition: opacity var(--transition-fast);
-    z-index: var(--z-tooltip);
+    transition: opacity 200ms ease-in-out;
+    z-index: 1000;
     font-size: var(--font-size-sm);
+    min-width: 180px;
 }
 
-.chart-tooltip.show {
-    opacity: 1;
+.tooltip-header {
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: var(--font-size-md);
+}
+
+.tooltip-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.tooltip-body strong {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.tooltip-percentage {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* Form Section */
