@@ -91,6 +91,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Integração com frontend/
+STATICFILES_DIRS = [
+    BASE_DIR.parent / 'frontend' / 'assets',  # Serve arquivos de frontend/assets/
+]
+
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -100,5 +105,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login/Logout URLs
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/products/'
+LOGIN_REDIRECT_URL = '/'  # Redireciona para dashboard após login
 LOGOUT_REDIRECT_URL = '/login/'

@@ -50,6 +50,23 @@ def profile_edit(request):
 
 
 @login_required
+def dashboard(request):
+    """
+    Dashboard principal com métricas e gráfico.
+    """
+    # Estatísticas gerais
+    total_products = Product.objects.count()
+    total_value = sum(p.price * p.stock for p in Product.objects.all())
+    
+    context = {
+        'total_products': total_products,
+        'total_value': total_value,
+    }
+    
+    return render(request, 'dashboard.html', context)
+
+
+@login_required
 def products_list(request):
     """
     Lista paginada de produtos com filtros.
