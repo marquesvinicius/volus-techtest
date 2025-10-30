@@ -225,3 +225,11 @@ def api_categories(request):
         })
     
     return JsonResponse({'categories': category_data})
+
+
+@login_required
+def configuracoes(request):
+    """
+    Página de configurações com toggle do Modo MALUQUICE.
+    """
+    return render(request, 'configuracoes.html')

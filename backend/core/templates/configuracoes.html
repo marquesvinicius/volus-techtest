@@ -1,0 +1,352 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Vólus TechTest</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    
+    <style>
+        .config-section {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-2xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .config-section h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .config-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-lg);
+            background: var(--bg-light);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-md);
+            transition: all var(--transition-base);
+        }
+        
+        .config-option:hover {
+            background: rgba(28, 204, 103, 0.05);
+            transform: translateX(4px);
+        }
+        
+        .config-info {
+            flex: 1;
+        }
+        
+        .config-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .config-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        /* Toggle Switch Customizado */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 32px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--color-primary);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+        
+        .crazy-mode-active {
+            animation: rainbowGlow 2s ease infinite;
+        }
+        
+        @keyframes rainbowGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
+            25% { box-shadow: 0 0 20px rgba(255, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+            75% { box-shadow: 0 0 20px rgba(0, 0, 255, 0.3); }
+        }
+        
+        .crazy-indicator {
+            display: none;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--border-radius-sm);
+            margin-top: var(--spacing-md);
+            animation: slideDown 0.3s ease;
+        }
+        
+        .crazy-indicator.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (mesmo do dashboard) -->
+    <header class="header">
+        <div class="header-content">
+            <img src="{% static 'img/volus-logo2.png' %}" alt="Vólus" class="logo">
+            
+            <div class="user-menu">
+                <button class="user-profile-btn" id="userProfileBtn" aria-label="Menu do usuário" aria-expanded="false">
+                    <div class="user-avatar">{{ user.first_name.0|default:'U' }}{{ user.last_name.0|default:'S' }}</div>
+                    <div class="user-info">
+                        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                        <span class="user-role">{% if user.is_superuser %}Administrador{% else %}Usuário{% endif %}</span>
+                    </div>
+                    <svg class="user-dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                    
+                    <div class="user-dropdown">
+                        <a href="{% url 'profile_edit' %}" class="user-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Meu Perfil</span>
+                        </a>
+                    </div>
+                </button>
+                
+                <button class="logout-btn" id="logoutBtn" aria-label="Sair" title="Sair" onclick="window.location.href='{% url 'logout' %}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <button class="sidebar-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="toggle-icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Sidebar (mesma estrutura do dashboard) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Colapsar menu lateral">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}" class="nav-link" data-tooltip="Dashboard">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item has-submenu">
+                        <a href="#produtos" class="nav-link" data-tooltip="Produtos">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span class="nav-text">Produtos</span>
+                            <svg class="nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{% url 'products_list' %}">Listar Produtos</a></li>
+                            <li><a href="/admin/core/product/add/">Adicionar Produto</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/relatorios/" class="nav-link" data-tooltip="Relatórios">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="20" x2="12" y2="10"></line>
+                                <line x1="18" y1="20" x2="18" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="16"></line>
+                            </svg>
+                            <span class="nav-text">Relatórios</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/configuracoes/" class="nav-link active" data-tooltip="Configurações">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6m10-7h-6m-6 0H4m15.36 7.36l-4.24-4.24M8.88 8.88 4.64 4.64m14.72 0-4.24 4.24M8.88 15.12l-4.24 4.24"></path>
+                            </svg>
+                            <span class="nav-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">Configurações</h1>
+            
+            <!-- Seção: Modo MALUQUICE -->
+            <section class="config-section" id="crazyModeSection">
+                <h2>
+                    🎭 Modo MALUQUICE
+                </h2>
+                
+                <div class="config-option">
+                    <div class="config-info">
+                        <div class="config-title">Ativar Modo MALUQUICE</div>
+                        <div class="config-description">
+                            Ativa funcionalidades criativas e comportamentos não intuitivos: 
+                            gráfico com redistribuição, sidebar com delays, validações ocultas, 
+                            filtros com easter eggs e muito mais!
+                        </div>
+                    </div>
+                    
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="crazyModeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="crazy-indicator" id="crazyIndicator">
+                    <span>🎉</span>
+                    <span><strong>Modo MALUQUICE ATIVADO!</strong> Explore o dashboard e filtros para ver as surpresas.</span>
+                </div>
+            </section>
+            
+            <!-- Outras configurações podem ser adicionadas aqui -->
+            <section class="config-section">
+                <h2>⚙️ Preferências Gerais</h2>
+                
+                <div class="config-option">
+                    <div class="config-info">
+                        <div class="config-title">Notificações</div>
+                        <div class="config-description">Receber notificações sobre atualizações e novos produtos</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="config-option">
+                    <div class="config-info">
+                        <div class="config-title">Tema Escuro</div>
+                        <div class="config-description">Ativar tema escuro (em breve)</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" disabled>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/sidebar.js' %}"></script>
+    
+    <script>
+        // Toggle Modo MALUQUICE
+        const crazyModeToggle = document.getElementById('crazyModeToggle');
+        const crazyIndicator = document.getElementById('crazyIndicator');
+        const crazySection = document.getElementById('crazyModeSection');
+        
+        // Carrega estado salvo
+        const isCrazyMode = localStorage.getItem('crazyMode') === 'true';
+        crazyModeToggle.checked = isCrazyMode;
+        
+        if (isCrazyMode) {
+            crazyIndicator.classList.add('active');
+            crazySection.classList.add('crazy-mode-active');
+        }
+        
+        // Event listener
+        crazyModeToggle.addEventListener('change', function() {
+            const isEnabled = this.checked;
+            localStorage.setItem('crazyMode', isEnabled);
+            
+            if (isEnabled) {
+                crazyIndicator.classList.add('active');
+                crazySection.classList.add('crazy-mode-active');
+            } else {
+                crazyIndicator.classList.remove('active');
+                crazySection.classList.remove('crazy-mode-active');
+            }
+            
+            console.log('🎭 Modo MALUQUICE:', isEnabled ? 'ATIVADO' : 'DESATIVADO');
+        });
+    </script>
+</body>
+</html>
+

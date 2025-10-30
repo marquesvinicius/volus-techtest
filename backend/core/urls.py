@@ -16,6 +16,9 @@ urlpatterns = [
     # Perfil de usuário
     path('profile/', views.profile_edit, name='profile_edit'),
     
+    # Configurações
+    path('configuracoes/', views.configuracoes, name='configuracoes'),
+    
     # Produtos
     path('products/', views.products_list, name='products_list'),
     path('products/<int:pk>/', views.product_detail, name='product_detail'),
