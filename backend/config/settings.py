@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
@@ -99,10 +100,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Esta configuração era para a arquitetura monolítica e não é mais necessária.
-# STATICFILES_DIRS = [
-#     BASE_DIR.parent / "frontend/assets",
-# ]
 
 # Media files
 MEDIA_URL = 'media/'

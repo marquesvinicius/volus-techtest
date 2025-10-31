@@ -100,26 +100,28 @@ const Dashboard = () => {
   const metrics = useMemo(() => {
     if (!products.length) {
       return {
-        totalRevenue: 24500,
-        productsSold: 1234,
-        newCustomers: 89,
-        conversionRate: 3.2,
+        totalStockValue: 0,
+        totalItemsInStock: 0,
+        skuCount: 0,
+        averageItemPrice: 0,
       };
     }
 
-    const totalRevenue = products.reduce((sum, product) => {
+    const totalStockValue = products.reduce((sum, product) => {
       const numericPrice = Number(product.price) || 0;
       const units = Number(product.stock) || 0;
       return sum + numericPrice * units;
     }, 0);
 
-    const totalUnits = products.reduce((sum, product) => sum + (Number(product.stock) || 0), 0);
+    const totalItemsInStock = products.reduce((sum, product) => sum + (Number(product.stock) || 0), 0);
+    const skuCount = products.length;
+    const averageItemPrice = totalItemsInStock > 0 ? totalStockValue / totalItemsInStock : 0;
 
     return {
-      totalRevenue,
-      productsSold: totalUnits,
-      newCustomers: 89, // placeholder
-      conversionRate: 3.2, // placeholder
+      totalStockValue,
+      totalItemsInStock,
+      skuCount,
+      averageItemPrice,
     };
   }, [products]);
 
@@ -145,39 +147,31 @@ const Dashboard = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
           <MetricCard
-            title="Vendas totais"
-            value={formatCurrency(metrics.totalRevenue)}
+            title="Valor Total em Estoque"
+            value={formatCurrency(metrics.totalStockValue)}
             icon={Icons.DollarSign}
             accentColor="#1CCF6C"
-            delta="+12% vs mês anterior"
-            deltaPositive
           />
 
           <MetricCard
-            title="Produtos vendidos"
-            value={metrics.productsSold.toLocaleString('pt-BR')}
+            title="Total de Itens em Estoque"
+            value={metrics.totalItemsInStock.toLocaleString('pt-BR')}
             icon={Icons.ShoppingCart}
             accentColor="#0EA5E9"
-            delta="+8% vs mês anterior"
-            deltaPositive
           />
 
           <MetricCard
-            title="Novos clientes"
-            value={metrics.newCustomers.toLocaleString('pt-BR')}
+            title="Nº de Produtos (SKUs)"
+            value={metrics.skuCount.toLocaleString('pt-BR')}
             icon={Icons.Users}
             accentColor="#F59E0B"
-            delta="-3% vs mês anterior"
-            deltaPositive={false}
           />
 
           <MetricCard
-            title="Taxa de conversão"
-            value={`${metrics.conversionRate.toFixed(1)}%`}
+            title="Preço Médio por Item"
+            value={formatCurrency(metrics.averageItemPrice)}
             icon={Icons.Activity}
             accentColor="#8B5CF6"
-            delta="+0.5% vs mês anterior"
-            deltaPositive
           />
           </div>
         </div>

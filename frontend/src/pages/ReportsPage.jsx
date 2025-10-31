@@ -58,17 +58,22 @@ const ReportsPage = () => {
   const reportData = useMemo(() => {
     if (loading || products.length === 0) {
       return {
-        totalRevenue: 0,
-        avgPrice: 0,
-        lowStockCount: 0,
+        mostExpensiveProduct: null,
+        cheapestProduct: null,
+        highestStockProduct: null,
+        lowestStockProduct: null,
         categoriesDistribution: [],
         priceRanges: { labels: [], data: [] },
       };
     }
 
-    const totalRevenue = products.reduce((acc, p) => acc + (parseFloat(p.price) * p.stock), 0);
-    const avgPrice = products.reduce((acc, p) => acc + parseFloat(p.price), 0) / products.length;
-    const lowStockCount = products.filter(p => p.stock < 10).length;
+    const sortedByPrice = [...products].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    const mostExpensiveProduct = sortedByPrice[0];
+    const cheapestProduct = sortedByPrice[sortedByPrice.length - 1];
+
+    const sortedByStock = [...products].sort((a, b) => b.stock - a.stock);
+    const highestStockProduct = sortedByStock[0];
+    const lowestStockProduct = sortedByStock[sortedByStock.length - 1];
 
     // Distribuição por categoria
     const categoryCount = products.reduce((acc, p) => {
@@ -106,7 +111,14 @@ const ReportsPage = () => {
       data: Object.values(priceRanges),
     };
 
-    return { totalRevenue, avgPrice, lowStockCount, categoriesDistribution, priceRanges: priceRangesData };
+    return { 
+      mostExpensiveProduct,
+      cheapestProduct,
+      highestStockProduct,
+      lowestStockProduct,
+      categoriesDistribution, 
+      priceRanges: priceRangesData 
+    };
   }, [products, loading]);
 
   const lineChartData = {
@@ -199,30 +211,30 @@ const ReportsPage = () => {
       {/* Cards de Métricas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Valor Total em Estoque"
-          value={formatCurrency(reportData.totalRevenue)}
-          subtitle="Soma do preço x estoque de todos os produtos"
+          title="Produto Mais Caro"
+          value={reportData.mostExpensiveProduct ? formatCurrency(reportData.mostExpensiveProduct.price) : 'N/A'}
+          subtitle={reportData.mostExpensiveProduct ? reportData.mostExpensiveProduct.name : ''}
           icon={Icons.DollarSign}
           accentColor="#1CCF6C"
         />
         <MetricCard
-          title="Preço Médio por Item"
-          value={formatCurrency(reportData.avgPrice)}
-          subtitle="Média de preço de todos os produtos"
+          title="Produto Mais Barato"
+          value={reportData.cheapestProduct ? formatCurrency(reportData.cheapestProduct.price) : 'N/A'}
+          subtitle={reportData.cheapestProduct ? reportData.cheapestProduct.name : ''}
           icon={Icons.BarChart}
           accentColor="#0EA5E9"
         />
         <MetricCard
-          title="Itens com Estoque Baixo"
-          value={`${reportData.lowStockCount} produtos`}
-          subtitle="Produtos com 10 ou menos unidades"
+          title="Produto com Maior Estoque"
+          value={reportData.highestStockProduct ? `${reportData.highestStockProduct.stock} unidades` : 'N/A'}
+          subtitle={reportData.highestStockProduct ? reportData.highestStockProduct.name : ''}
           icon={Icons.Package}
           accentColor="#F59E0B"
         />
         <MetricCard
-          title="Categorias Únicas"
-          value={`${reportData.categoriesDistribution.length} categorias`}
-          subtitle="Total de categorias de produtos ativas"
+          title="Produto com Menor Estoque"
+          value={reportData.lowestStockProduct ? `${reportData.lowestStockProduct.stock} unidades` : 'N/A'}
+          subtitle={reportData.lowestStockProduct ? reportData.lowestStockProduct.name : ''}
           icon={Icons.PieChart}
           accentColor="#8B5CF6"
         />
