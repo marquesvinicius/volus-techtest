@@ -306,6 +306,16 @@
     <script src="{% static 'js/chart-config.js' %}"></script>
     <script src="{% static 'js/sidebar.js' %}"></script>
     <script src="{% static 'js/form-validation.js' %}"></script>
+    
+    <script>
+        // Debug: Verificar se links estão funcionando
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                console.log('🔗 Link clicado:', this.href);
+                console.log('🎯 Tem submenu?', this.closest('.has-submenu') !== null);
+            });
+        });
+    </script>
 </body>
 </html>
 
