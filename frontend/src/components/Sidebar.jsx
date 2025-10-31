@@ -122,10 +122,12 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Mobile sempre expandido */}
       <aside
         className={`fixed top-20 md:top-20 bottom-0 bg-white border-r border-gray-200 z-40 transition-all duration-300 flex flex-col ${
-          collapsed ? 'w-20' : 'w-64'
+          collapsed && 'md:w-20'
+        } ${
+          !collapsed || isOpen ? 'w-64' : 'w-64 md:w-20'
         } ${
           isOpen
             ? 'left-0'
@@ -135,110 +137,110 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
         <div className="flex-1 flex flex-col overflow-y-auto">
           {/* Container para alinhar botão e navegação */}
           <div className={`p-4 ${collapsed ? 'flex flex-col items-center' : ''}`}>
-            {/* Collapse Button (Desktop) */}
+        {/* Collapse Button (Desktop) */}
             <div className={`hidden md:flex ${collapsed ? 'justify-center' : 'justify-end'} mb-4`}>
-              <button
-                onClick={toggleCollapse}
-                className="p-2 hover:bg-gray-100 rounded-lg transition text-volus-davys-gray"
-                aria-label={collapsed ? 'Expandir menu' : 'Colapsar menu'}
-                title={collapsed ? 'Expandir menu' : 'Colapsar menu'}
-              >
-                <svg
-                  className={`w-5 h-5 transition ${collapsed ? 'rotate-180' : ''}`}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-            </div>
-            
+          <button
+            onClick={toggleCollapse}
+            className="p-2 hover:bg-gray-100 rounded-lg transition text-volus-davys-gray"
+            aria-label={collapsed ? 'Expandir menu' : 'Colapsar menu'}
+            title={collapsed ? 'Expandir menu' : 'Colapsar menu'}
+          >
+            <svg
+              className={`w-5 h-5 transition ${collapsed ? 'rotate-180' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </div>
+
             <nav>
-              <ul className="space-y-2">
-                {menuItems.map((item) => (
-                  <li key={item.id}>
-                    {item.submenu ? (
-                      /* Item com Submenu */
-                      <>
-                        <Link
-                          to={item.path || '#'}
-                          onClick={(e) => {
-                            if (!item.path) e.preventDefault();
-                            toggleSubmenu(item.id);
-                          }}
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition group ${
-                            isSubmenuActive(item)
-                              ? 'bg-emerald-50 text-volus-emerald'
-                              : 'text-volus-jet hover:bg-gray-50'
-                          } ${collapsed ? 'justify-center' : ''}`}
-                          title={collapsed ? item.label : ''}
-                        >
-                          <span className="w-5 h-5 flex-shrink-0">{item.icon}</span>
-                          {!collapsed && (
-                            <>
-                              <span className="flex-1 text-left text-sm font-medium">
-                                {item.label}
-                              </span>
-                              <svg
-                                className={`w-4 h-4 transition ${
-                                  expandedMenus.includes(item.id) ? 'rotate-180' : ''
-                                }`}
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                              >
-                                <path d="M6 9l6 6 6-6" />
-                              </svg>
-                            </>
-                          )}
+          <ul className="space-y-2">
+            {menuItems.map((item) => (
+              <li key={item.id}>
+                {item.submenu ? (
+                  /* Item com Submenu */
+                  <>
+                    <Link
+                      to={item.path || '#'}
+                      onClick={(e) => {
+                        if (!item.path) e.preventDefault();
+                        toggleSubmenu(item.id);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 rounded-lg transition group ${
+                        isSubmenuActive(item)
+                          ? 'bg-emerald-50 text-volus-emerald'
+                          : 'text-volus-jet hover:bg-gray-50'
+                      } ${collapsed ? 'justify-center py-2.5' : 'py-3 md:py-2.5'}`}
+                      title={collapsed ? item.label : ''}
+                    >
+                      <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
+                      {!collapsed && (
+                        <>
+                          <span className="flex-1 text-left text-base md:text-sm font-medium">
+                            {item.label}
+                          </span>
+                          <svg
+                            className={`w-4 h-4 transition ${
+                              expandedMenus.includes(item.id) ? 'rotate-180' : ''
+                            }`}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M6 9l6 6 6-6" />
+                          </svg>
+                        </>
+                      )}
                         </Link>
 
-                        {/* Submenu */}
-                        {!collapsed && expandedMenus.includes(item.id) && (
-                          <ul className="ml-8 mt-2 space-y-1">
-                            {item.submenu.map((subitem) => (
-                              <li key={subitem.id}>
-                                <Link
-                                  to={subitem.path}
-                                  className={`block px-3 py-2 text-sm rounded-lg transition ${
-                                    isActive(subitem.path)
-                                      ? 'bg-volus-emerald text-white'
-                                      : 'text-volus-davys-gray hover:bg-gray-50'
-                                  }`}
-                                  onClick={onClose}
-                                >
-                                  {subitem.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </>
-                    ) : (
-                      /* Item Simples */
-                      <Link
-                        to={item.path}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${
-                          isActive(item.path)
-                            ? 'bg-emerald-50 text-volus-emerald'
-                            : 'text-volus-jet hover:bg-gray-50'
-                        } ${collapsed ? 'justify-center' : ''}`}
-                        title={collapsed ? item.label : ''}
-                        onClick={onClose}
-                      >
-                        <span className="w-5 h-5 flex-shrink-0">{item.icon}</span>
-                        {!collapsed && (
-                          <span className="text-sm font-medium">{item.label}</span>
-                        )}
-                      </Link>
+                    {/* Submenu */}
+                    {!collapsed && expandedMenus.includes(item.id) && (
+                      <ul className="ml-8 mt-2 space-y-1">
+                        {item.submenu.map((subitem) => (
+                          <li key={subitem.id}>
+                            <Link
+                              to={subitem.path}
+                              className={`block px-3 rounded-lg transition ${
+                                isActive(subitem.path)
+                                  ? 'bg-volus-emerald text-white'
+                                  : 'text-volus-davys-gray hover:bg-gray-50'
+                              } py-2.5 md:py-2 text-base md:text-sm`}
+                              onClick={onClose}
+                            >
+                              {subitem.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                  </>
+                ) : (
+                  /* Item Simples */
+                  <Link
+                    to={item.path}
+                    className={`flex items-center gap-3 px-3 rounded-lg transition ${
+                      isActive(item.path)
+                        ? 'bg-emerald-50 text-volus-emerald'
+                        : 'text-volus-jet hover:bg-gray-50'
+                    } ${collapsed ? 'justify-center py-2.5' : 'py-3 md:py-2.5'}`}
+                    title={collapsed ? item.label : ''}
+                    onClick={onClose}
+                  >
+                    <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
+                    {!collapsed && (
+                      <span className="text-base md:text-sm font-medium">{item.label}</span>
+                    )}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
           </div>
         </div>
 

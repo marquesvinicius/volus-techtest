@@ -6,8 +6,10 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProductList from './pages/ProductList';
 import CategoriesPage from './pages/ProductFilter';
-import StockControlPage from './pages/Reports';
+import StockControlPage from './pages/StockControlPage';
+import ReportsPage from './pages/ReportsPage';
 import Settings from './pages/Settings';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -63,15 +65,26 @@ function App() {
           />
           
           <Route
-            path="/relatorios"
+            path="/perfil" // Adicionar a nova rota
             element={
               <PrivateRoute>
                 <Layout>
-                  <StockControlPage />
+                  <ProfilePage />
                 </Layout>
               </PrivateRoute>
             }
           />
+          
+              <Route
+                path="/relatorios"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <ReportsPage />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
           
           <Route
             path="/configuracoes"

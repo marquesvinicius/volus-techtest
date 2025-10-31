@@ -1,5 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import productService from '../services/productService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ProductForm from '../components/products/ProductForm'; // Importar o formulário
+import { validateCodeChecksum } from '../utils/validation';
+
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -10,59 +15,73 @@ const ProductList = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    code: '',
+    price: '',
+    category: '',
+    subcategory: '',
+    stock: '',
+  });
+  const [codeError, setCodeError] = useState('');
+
 
   // Fetch products from API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await productService.getProducts({ page_size: 500 });
-        setProducts(response.results || []);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      // Ajustado para buscar todos os produtos
+      const response = await productService.getProducts({ page_size: 500 });
+      setProducts(response.results || []);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+      toast.error('Falha ao buscar produtos.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Extract unique categories
+  // Memoized unique categories and subcategories
   const categories = useMemo(() => {
-    return [...new Set(products.map((p) => p.category_display || p.category))].sort();
+    return [...new Set(products.map(p => p.category))].sort();
   }, [products]);
 
-  // Extract subcategories based on selected category
-  const subcategories = useMemo(() => {
+  // Subcategorias para o FILTRO
+  const subcategoriesForFilter = useMemo(() => {
     if (!selectedCategory) return [];
-    return [
-      ...new Set(
-        products
-          .filter((p) => (p.category_display || p.category) === selectedCategory)
-          .map((p) => p.subcategory)
-          .filter(Boolean)
-      ),
-    ].sort();
+    return [...new Set(products.filter(p => p.category === selectedCategory).map(p => p.subcategory))].sort();
   }, [products, selectedCategory]);
+
+  // Subcategorias para o MODAL de Adicionar Produto
+  const subcategoriesForModal = useMemo(() => {
+    if (!newProduct.category) return [];
+    return [...new Set(products.filter(p => p.category === newProduct.category).map(p => p.subcategory))].sort();
+  }, [products, newProduct.category]);
+
 
   // Apply filters and sorting
   useEffect(() => {
-    let filtered = [...products];
+    let results = [...products];
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter((p) => (p.category_display || p.category) === selectedCategory);
+      results = results.filter((p) => p.category === selectedCategory);
     }
 
     // Filter by subcategory
     if (selectedSubcategory) {
-      filtered = filtered.filter((p) => p.subcategory === selectedSubcategory);
+      results = results.filter((p) => p.subcategory === selectedSubcategory);
     }
 
     // Filter by search term (name or code)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
+      results = results.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
           p.code.toLowerCase().includes(term)
@@ -70,7 +89,7 @@ const ProductList = () => {
     }
 
     // Apply sorting
-    filtered.sort((a, b) => {
+    results.sort((a, b) => {
       let aVal, bVal;
       
       switch (sortBy) {
@@ -101,7 +120,7 @@ const ProductList = () => {
       return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
     });
 
-    setFilteredProducts(filtered);
+    setFilteredProducts(results);
   }, [products, selectedCategory, selectedSubcategory, searchTerm, sortBy, sortOrder]);
 
   const handleReset = () => {
@@ -112,11 +131,47 @@ const ProductList = () => {
     setSortOrder('asc');
   };
 
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCodeChange = (e) => {
+    const { value } = e.target;
+    setNewProduct(prev => ({ ...prev, code: value }));
+
+    if (value && !validateCodeChecksum(value)) {
+      setCodeError('Checksum inválido. A soma dos dígitos do código deve ser divisível por 3.');
+    } else {
+      setCodeError('');
+    }
+  };
+
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    if (!newProduct.name || !newProduct.code || !newProduct.price || !newProduct.category || !newProduct.stock) {
+      toast.warn('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+    if (codeError) {
+      toast.error('Por favor, corrija os erros no formulário antes de salvar.');
+      return;
+    }
+    
+    try {
+      const createdProduct = await productService.createProduct(newProduct);
+      // Atualiza a lista de produtos no estado para refletir a adição
+      setProducts(prev => [createdProduct, ...prev]);
+      toast.success(`Produto "${createdProduct.name}" adicionado com sucesso!`);
+      setIsModalOpen(false);
+      setNewProduct({ name: '', code: '', price: '', category: '', subcategory: '', stock: '' });
+    } catch (error) {
+      console.error('Erro ao criar produto:', error);
+      toast.error('Erro ao criar produto. Verifique os dados e tente novamente.');
+    }
+  };
+
+  const formatPrice = (price) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
 
   const SortableHeader = ({ label, sortKey, currentSort, currentOrder, onSort }) => {
     const isActive = currentSort === sortKey;
@@ -169,185 +224,223 @@ const ProductList = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-volus-jet">Catálogo de Produtos</h1>
-        <p className="text-volus-davys-gray mt-1">Gerenciamento completo de produtos com filtros avançados</p>
-      </div>
-
-      {/* Filters Section */}
-      <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6 space-y-4">
+    <>
+      <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} />
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-volus-jet">Filtros</h2>
+          <div>
+            <h1 className="text-3xl font-bold text-volus-jet">Catálogo de Produtos</h1>
+            <p className="text-volus-davys-gray mt-1">Gerenciamento completo de produtos com filtros avançados</p>
+          </div>
           <button
-            onClick={handleReset}
-            className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 rounded-lg transition"
+            onClick={() => setIsModalOpen(true)}
+            className="px-5 py-2.5 bg-volus-emerald text-white font-semibold rounded-lg hover:bg-volus-emerald/90 transition shadow-sm"
           >
-            Limpar tudo
+            Adicionar Produto
           </button>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div>
-            <label className="block text-sm font-medium text-volus-jet mb-2">
-              Buscar (Nome ou Código)
-            </label>
-            <input
-              type="text"
-              placeholder="Digite para buscar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div>
-            <label className="block text-sm font-medium text-volus-jet mb-2">
-              Categoria
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-                setSelectedSubcategory('');
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+        <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-volus-jet">Filtros</h2>
+            <button
+              onClick={handleReset}
+              className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 rounded-lg transition"
             >
-              <option value="">Todas as categorias</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+              Limpar tudo
+            </button>
           </div>
 
-          {/* Subcategory Filter */}
-          <div>
-            <label className="block text-sm font-medium text-volus-jet mb-2">
-              Subcategoria
-            </label>
-            <select
-              value={selectedSubcategory}
-              onChange={(e) => setSelectedSubcategory(e.target.value)}
-              disabled={!selectedCategory}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 disabled:bg-gray-100 disabled:text-gray-400"
-            >
-              <option value="">Todas as subcategorias</option>
-              {subcategories.map((subcat) => (
-                <option key={subcat} value={subcat}>
-                  {subcat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort */}
-          <div>
-            <label className="block text-sm font-medium text-volus-jet mb-2">
-              Ordenar por
-            </label>
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
-              >
-                <option value="name">Nome</option>
-                <option value="price">Preço</option>
-                <option value="stock">Estoque</option>
-                <option value="code">Código</option>
-              </select>
-              <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition text-sm font-medium text-volus-jet"
-                title={sortOrder === 'asc' ? 'Ascendente' : 'Descendente'}
-              >
-                {sortOrder === 'asc' ? '↑' : '↓'}
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Search */}
+            <div>
+              <label className="block text-sm font-medium text-volus-jet mb-2">
+                Buscar (Nome ou Código)
+              </label>
+              <input
+                type="text"
+                placeholder="Digite para buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+              />
             </div>
+
+            {/* Category Filter */}
+            <div>
+              <label className="block text-sm font-medium text-volus-jet mb-2">
+                Categoria
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setSelectedSubcategory('');
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+              >
+                <option value="">Todas as categorias</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subcategory Filter */}
+            <div>
+              <label className="block text-sm font-medium text-volus-jet mb-2">
+                Subcategoria
+              </label>
+              <select
+                value={selectedSubcategory}
+                onChange={(e) => setSelectedSubcategory(e.target.value)}
+                disabled={!selectedCategory}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 disabled:bg-gray-100 disabled:text-gray-400"
+              >
+                <option value="">Todas as subcategorias</option>
+                {subcategoriesForFilter.map((subcat) => (
+                  <option key={subcat} value={subcat}>
+                    {subcat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          </div>
+
+          <div className="text-sm text-volus-davys-gray">
+            Mostrando {filteredProducts.length} de {products.length} produtos
           </div>
         </div>
 
-        <div className="text-sm text-volus-davys-gray">
-          Mostrando {filteredProducts.length} de {products.length} produtos
-        </div>
-      </div>
-
-      {/* Products Table */}
-      <div className="bg-white rounded-2xl shadow-card border border-white/60 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <SortableHeader 
-                  label="Código" 
-                  sortKey="code" 
-                  currentSort={sortBy} 
-                  currentOrder={sortOrder}
-                  onSort={handleSort}
-                />
-                <SortableHeader 
-                  label="Nome" 
-                  sortKey="name" 
-                  currentSort={sortBy} 
-                  currentOrder={sortOrder}
-                  onSort={handleSort}
-                />
-                <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Categoria</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Subcategoria</th>
-                <SortableHeader 
-                  label="Preço" 
-                  sortKey="price" 
-                  currentSort={sortBy} 
-                  currentOrder={sortOrder}
-                  onSort={handleSort}
-                />
-                <SortableHeader 
-                  label="Estoque" 
-                  sortKey="stock" 
-                  currentSort={sortBy} 
-                  currentOrder={sortOrder}
-                  onSort={handleSort}
-                />
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray">{product.code}</td>
-                    <td className="px-6 py-4 text-sm text-volus-jet font-medium">{product.name}</td>
-                    <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.category_display || product.category}</td>
-                    <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.subcategory || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-right font-medium text-volus-emerald">
-                      {formatPrice(product.price)}
-                    </td>
-                    <td className="px-6 py-4 text-center text-sm">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.stock > 0
-                          ? 'bg-emerald-50 text-volus-emerald'
-                          : 'bg-red-50 text-red-600'
-                      }`}>
-                        {product.stock}
-                      </span>
+        {/* Products Table */}
+        <div className="bg-white rounded-2xl shadow-card border border-white/60 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <SortableHeader 
+                    label="Código" 
+                    sortKey="code" 
+                    currentSort={sortBy} 
+                    currentOrder={sortOrder}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader 
+                    label="Nome" 
+                    sortKey="name" 
+                    currentSort={sortBy} 
+                    currentOrder={sortOrder}
+                    onSort={handleSort}
+                  />
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Categoria</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Subcategoria</th>
+                  <SortableHeader 
+                    label="Preço" 
+                    sortKey="price" 
+                    currentSort={sortBy} 
+                    currentOrder={sortOrder}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader 
+                    label="Estoque" 
+                    sortKey="stock" 
+                    currentSort={sortBy} 
+                    currentOrder={sortOrder}
+                    onSort={handleSort}
+                  />
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                      <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray">{product.code}</td>
+                      <td className="px-6 py-4 text-sm text-volus-jet font-medium">{product.name}</td>
+                      <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.category_display || product.category}</td>
+                      <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.subcategory || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-right font-medium text-volus-emerald">
+                        {formatPrice(product.price)}
+                      </td>
+                      <td className="px-6 py-4 text-center text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          product.stock > 0
+                            ? 'bg-emerald-50 text-volus-emerald'
+                            : 'bg-red-50 text-red-600'
+                        }`}>
+                          {product.stock}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center text-volus-davys-gray">
+                      Nenhum produto encontrado com os filtros aplicados
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-volus-davys-gray">
-                    Nenhum produto encontrado com os filtros aplicados
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl">
+              <h2 className="text-2xl font-bold text-volus-jet mb-6">Adicionar Novo Produto</h2>
+              <form onSubmit={handleAddProduct} className="space-y-4">
+                
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-volus-jet mb-1">Nome do Produto</label>
+                  <input type="text" name="name" id="name" value={newProduct.name} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="code" className="block text-sm font-medium text-volus-jet mb-1">SKU (Código)</label>
+                    <input type="text" name="code" id="code" value={newProduct.code} onChange={handleCodeChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                    {codeError && <p className="text-red-500 text-xs mt-1">{codeError}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="price" className="block text-sm font-medium text-volus-jet mb-1">Preço (R$)</label>
+                    <input type="number" name="price" id="price" step="0.01" value={newProduct.price} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-volus-jet mb-1">Categoria</label>
+                    <select name="category" id="category" value={newProduct.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required>
+                      <option value="">Selecione...</option>
+                      {categories.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
+                    </select>
+                  </div>
+                   <div>
+                    <label htmlFor="subcategory" className="block text-sm font-medium text-volus-jet mb-1">Subcategoria</label>
+                    <select name="subcategory" id="subcategory" value={newProduct.subcategory} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" disabled={!newProduct.category}>
+                      <option value="">Selecione...</option>
+                      {subcategoriesForModal.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                    </select>
+                  </div>
+                </div>
+                
+                 <div>
+                    <label htmlFor="stock" className="block text-sm font-medium text-volus-jet mb-1">Estoque</label>
+                    <input type="number" name="stock" id="stock" value={newProduct.stock} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                  </div>
+
+                <div className="flex justify-end gap-4 pt-4">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Cancelar</button>
+                  <button type="submit" className="px-6 py-2 bg-volus-emerald text-white rounded-md hover:bg-volus-emerald/90">Salvar Produto</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

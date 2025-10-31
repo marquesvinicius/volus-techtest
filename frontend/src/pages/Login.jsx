@@ -47,9 +47,6 @@ const Login = () => {
             alt="Vólus Logo"
             className="h-16 mx-auto mb-4"
           />
-          <h1 className="text-3xl font-bold text-volus-jet">
-            Sistema Vólus
-          </h1>
           <p className="text-volus-davys-gray mt-2">
             Faça login para continuar
           </p>
@@ -131,7 +128,7 @@ const Login = () => {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-volus-davys-gray">
-          © 2024 Vólus. Todos os direitos reservados.
+          © 2025 Vólus. Todos os direitos reservados.
         </div>
       </div>
     </div>

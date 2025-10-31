@@ -3,6 +3,7 @@ import FilterCascade from '../components/products/FilterCascade';
 import FilterChips from '../components/products/FilterChips';
 import productService from '../services/productService';
 import { isCrazyModeEnabled } from '../utils/validation';
+import useDebounce from '../hooks/useDebounce';
 
 /**
  * Página de Filtro de Produtos com Cascata 3 Níveis
@@ -34,6 +35,32 @@ const ProductFilter = () => {
   // Debounce para busca em tempo real
   const searchTimeout = useRef(null);
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  const fetchProducts = useCallback(async (currentChips, search) => {
+    setSearchLoading(true);
+    try {
+      const params = {
+        q: search,
+        page_size: 100,
+      };
+      
+      const category = currentChips.find(c => c.type === 'category')?.value;
+      const subcategory = currentChips.find(c => c.type === 'subcategory')?.value;
+
+      if (category) params.category = category;
+      if (subcategory) params.subcategory = subcategory;
+
+      const response = await productService.getProducts(params);
+      setProducts(response.results || []);
+      setFilteredProducts(response.results || []);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  }, []);
+
   // Carrega estrutura de categorias da API
   useEffect(() => {
     const loadCategories = async () => {
@@ -55,20 +82,8 @@ const ProductFilter = () => {
 
   // Carrega produtos da API
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await productService.getProducts({ page_size: 500 });
-        setProducts(response.results || []);
-        setFilteredProducts(response.results || []);
-      } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
-        setProducts([]);
-        setFilteredProducts([]);
-      }
-    };
-
-    loadProducts();
-  }, []);
+    fetchProducts(chips, debouncedSearchTerm);
+  }, [chips, debouncedSearchTerm, fetchProducts]);
 
   // Filtra produtos baseado nos filtros selecionados (chips)
   const filterProducts = useCallback(() => {
@@ -257,7 +272,16 @@ const ProductFilter = () => {
 
       {/* Filtros em Cascata */}
       <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6">
-        <h2 className="text-lg font-semibold text-volus-jet mb-4">Filtros em Cascata</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-volus-jet">Filtros em Cascata</h2>
+          <button
+            onClick={handleReset}
+            className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 rounded-lg transition"
+            aria-label="Limpar todos os filtros"
+          >
+            Limpar tudo
+          </button>
+        </div>
         <FilterCascade
           categoriesData={categoriesData}
           onSelectionChange={handleSelectionChange}
@@ -268,26 +292,6 @@ const ProductFilter = () => {
       {chips.length > 0 && (
         <FilterChips chips={chips} onRemoveChip={handleRemoveChip} />
       )}
-
-      {/* Botão Reset */}
-      <div className="flex justify-end">
-        <button
-          onClick={handleReset}
-          className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-volus-jet rounded-lg transition font-medium flex items-center gap-2"
-          aria-label="Limpar todos os filtros"
-        >
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
-          Limpar Filtros
-        </button>
-      </div>
 
       {/* Resultados */}
       <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6">

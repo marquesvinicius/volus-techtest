@@ -132,3 +132,21 @@ export const isCrazyModeEnabled = () => {
   return localStorage.getItem('crazyMode') === 'true';
 };
 
+/**
+ * Valida um SKU usando um algoritmo de checksum.
+ * A soma de todos os dígitos deve ser divisível por 3.
+ * @param {string} sku - O SKU a ser validado.
+ * @returns {boolean} - True se o checksum for válido, false caso contrário.
+ */
+export const isChecksumValid = (sku) => {
+  if (!sku || typeof sku !== 'string') {
+    return false;
+  }
+  const digits = sku.replace(/\D/g, ''); // Remove não-dígitos
+  if (digits.length === 0) {
+    return false;
+  }
+  const sum = digits.split('').reduce((acc, digit) => acc + parseInt(digit, 10), 0);
+  return sum % 3 === 0;
+};
+

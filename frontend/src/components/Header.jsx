@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom'; // Importar o Link
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ onToggleSidebar, sidebarOpen }) => {
@@ -93,8 +94,9 @@ const Header = ({ onToggleSidebar, sidebarOpen }) => {
                     onClick={() => setUserMenuOpen(false)}
                   ></div>
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-40">
-                    <a
-                      href="#perfil"
+                    <Link // Alterado de <a> para <Link>
+                      to="/perfil" // Aponta para a nova rota
+                      onClick={() => setUserMenuOpen(false)} // Fecha o menu ao clicar
                       className="flex items-center gap-2 px-4 py-2 text-sm text-volus-jet hover:bg-gray-50 transition"
                     >
                       <svg
@@ -108,7 +110,7 @@ const Header = ({ onToggleSidebar, sidebarOpen }) => {
                         <circle cx="12" cy="7" r="4"></circle>
                       </svg>
                       <span>Meu Perfil</span>
-                    </a>
+                    </Link>
                   </div>
                 </>
               )}
@@ -135,11 +137,13 @@ const Header = ({ onToggleSidebar, sidebarOpen }) => {
             </button>
           </div>
 
-          {/* Mobile User Avatar */}
+          {/* Mobile User Avatar - Redireciona para perfil */}
           <div className="md:hidden">
-            <div className="w-10 h-10 bg-white text-white rounded-full flex items-center justify-center font-bold text-sm" style={{ color: '#29C967' }}>
-              {getUserInitials()}
-            </div>
+            <Link to="/perfil">
+              <div className="w-10 h-10 bg-white text-white rounded-full flex items-center justify-center font-bold text-sm cursor-pointer" style={{ color: '#29C967' }}>
+                {getUserInitials()}
+              </div>
+            </Link>
           </div>
         </div>
       </div>

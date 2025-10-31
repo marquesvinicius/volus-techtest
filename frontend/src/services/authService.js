@@ -74,12 +74,55 @@ const authService = {
   },
 
   /**
-   * Obter informações do usuário atual
+   * Obter informações do usuário atual do localStorage
    * @returns {Object|null}
    */
   getCurrentUser() {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
+  },
+
+  /**
+   * Buscar informações do usuário atual da API
+   * @returns {Promise<Object>}
+   */
+  async fetchCurrentUser() {
+    try {
+      const response = await api.get('/api/auth/me/');
+      localStorage.setItem('user', JSON.stringify(response.data));
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { detail: 'Erro ao buscar usuário' };
+    }
+  },
+
+  /**
+   * Atualizar informações do usuário atual
+   * @param {Object} userData - Dados a serem atualizados
+   * @returns {Promise<Object>}
+   */
+  async updateCurrentUser(userData) {
+    try {
+      const response = await api.put('/api/auth/me/', userData);
+      localStorage.setItem('user', JSON.stringify(response.data));
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { detail: 'Erro ao atualizar usuário' };
+    }
+  },
+
+  /**
+   * Alterar a senha do usuário
+   * @param {Object} passwordData - { old_password, new_password, new_password_confirm }
+   * @returns {Promise<Object>}
+   */
+  async changePassword(passwordData) {
+    try {
+      const response = await api.post('/api/auth/change-password/', passwordData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { detail: 'Erro ao alterar a senha' };
+    }
   },
 
   /**
