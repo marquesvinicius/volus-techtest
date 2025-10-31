@@ -178,7 +178,7 @@ const ProductList = () => {
     
     return (
       <th 
-        className="px-6 py-4 text-left text-sm font-semibold text-volus-jet cursor-pointer hover:bg-gray-100 transition"
+        className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-volus-dark-700 transition"
         onClick={() => {
           if (isActive) {
             // Cycle: asc -> desc -> none
@@ -229,8 +229,8 @@ const ProductList = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-volus-jet">Catálogo de Produtos</h1>
-            <p className="text-volus-davys-gray mt-1">Gerenciamento completo de produtos com filtros avançados</p>
+            <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Catálogo de Produtos</h1>
+            <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Gerenciamento completo de produtos com filtros avançados</p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -239,12 +239,12 @@ const ProductList = () => {
             Adicionar Produto
           </button>
         </div>
-        <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6 space-y-4">
+        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-volus-jet">Filtros</h2>
+            <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Filtros</h2>
             <button
               onClick={handleReset}
-              className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 rounded-lg transition"
+              className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 dark:hover:bg-volus-emerald/10 rounded-lg transition"
             >
               Limpar tudo
             </button>
@@ -253,7 +253,7 @@ const ProductList = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-volus-jet mb-2">
+              <label className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-2">
                 Buscar (Nome ou Código)
               </label>
               <input
@@ -261,13 +261,13 @@ const ProductList = () => {
                 placeholder="Digite para buscar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 bg-transparent dark:text-volus-dark-500"
               />
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-volus-jet mb-2">
+              <label className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-2">
                 Categoria
               </label>
               <select
@@ -276,7 +276,7 @@ const ProductList = () => {
                   setSelectedCategory(e.target.value);
                   setSelectedSubcategory('');
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 bg-transparent dark:text-volus-dark-500 dark:bg-volus-dark-800"
               >
                 <option value="">Todas as categorias</option>
                 {categories.map((cat) => (
@@ -289,14 +289,14 @@ const ProductList = () => {
 
             {/* Subcategory Filter */}
             <div>
-              <label className="block text-sm font-medium text-volus-jet mb-2">
+              <label className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-2">
                 Subcategoria
               </label>
               <select
                 value={selectedSubcategory}
                 onChange={(e) => setSelectedSubcategory(e.target.value)}
                 disabled={!selectedCategory}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 disabled:bg-gray-100 disabled:text-gray-400"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 disabled:bg-gray-100 dark:disabled:bg-volus-dark-700 disabled:text-gray-400 bg-transparent dark:bg-volus-dark-800 dark:text-volus-dark-500"
               >
                 <option value="">Todas as subcategorias</option>
                 {subcategoriesForFilter.map((subcat) => (
@@ -309,16 +309,16 @@ const ProductList = () => {
 
           </div>
 
-          <div className="text-sm text-volus-davys-gray">
+          <div className="text-sm text-volus-davys-gray dark:text-volus-dark-600">
             Mostrando {filteredProducts.length} de {products.length} produtos
           </div>
         </div>
 
         {/* Products Table */}
-        <div className="bg-white rounded-2xl shadow-card border border-white/60 overflow-hidden">
+        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-volus-dark-900 border-b border-gray-200 dark:border-volus-dark-700">
                 <tr>
                   <SortableHeader 
                     label="Código" 
@@ -334,8 +334,8 @@ const ProductList = () => {
                     currentOrder={sortOrder}
                     onSort={handleSort}
                   />
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Categoria</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Subcategoria</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Categoria</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Subcategoria</th>
                   <SortableHeader 
                     label="Preço" 
                     sortKey="price" 
@@ -355,19 +355,19 @@ const ProductList = () => {
               <tbody>
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray">{product.code}</td>
-                      <td className="px-6 py-4 text-sm text-volus-jet font-medium">{product.name}</td>
-                      <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.category_display || product.category}</td>
-                      <td className="px-6 py-4 text-sm text-volus-davys-gray">{product.subcategory || '-'}</td>
+                    <tr key={product.id} className="border-b border-gray-200 dark:border-volus-dark-700 hover:bg-gray-50 dark:hover:bg-volus-dark-700 transition">
+                      <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray dark:text-volus-dark-600">{product.code}</td>
+                      <td className="px-6 py-4 text-sm text-volus-jet font-medium dark:text-volus-dark-500">{product.name}</td>
+                      <td className="px-6 py-4 text-sm text-volus-davys-gray dark:text-volus-dark-600">{product.category_display || product.category}</td>
+                      <td className="px-6 py-4 text-sm text-volus-davys-gray dark:text-volus-dark-600">{product.subcategory || '-'}</td>
                       <td className="px-6 py-4 text-sm text-right font-medium text-volus-emerald">
                         {formatPrice(product.price)}
                       </td>
                       <td className="px-6 py-4 text-center text-sm">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           product.stock > 0
-                            ? 'bg-emerald-50 text-volus-emerald'
-                            : 'bg-red-50 text-red-600'
+                            ? 'bg-emerald-50 text-volus-emerald dark:bg-volus-emerald/10 dark:text-volus-emerald'
+                            : 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
                         }`}>
                           {product.stock}
                         </span>
@@ -376,7 +376,7 @@ const ProductList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-volus-davys-gray">
+                    <td colSpan="6" className="px-6 py-12 text-center text-volus-davys-gray dark:text-volus-dark-600">
                       Nenhum produto encontrado com os filtros aplicados
                     </td>
                   </tr>
@@ -388,38 +388,38 @@ const ProductList = () => {
 
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl">
-              <h2 className="text-2xl font-bold text-volus-jet mb-6">Adicionar Novo Produto</h2>
+            <div className="bg-white dark:bg-volus-dark-800 rounded-lg shadow-xl p-8 w-full max-w-2xl">
+              <h2 className="text-2xl font-bold text-volus-jet dark:text-volus-dark-500 mb-6">Adicionar Novo Produto</h2>
               <form onSubmit={handleAddProduct} className="space-y-4">
                 
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-volus-jet mb-1">Nome do Produto</label>
-                  <input type="text" name="name" id="name" value={newProduct.name} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                  <label htmlFor="name" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Nome do Produto</label>
+                  <input type="text" name="name" id="name" value={newProduct.name} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="code" className="block text-sm font-medium text-volus-jet mb-1">SKU (Código)</label>
-                    <input type="text" name="code" id="code" value={newProduct.code} onChange={handleCodeChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                    <label htmlFor="code" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">SKU (Código)</label>
+                    <input type="text" name="code" id="code" value={newProduct.code} onChange={handleCodeChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                     {codeError && <p className="text-red-500 text-xs mt-1">{codeError}</p>}
                   </div>
                   <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-volus-jet mb-1">Preço (R$)</label>
-                    <input type="number" name="price" id="price" step="0.01" value={newProduct.price} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                    <label htmlFor="price" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Preço (R$)</label>
+                    <input type="number" name="price" id="price" step="0.01" value={newProduct.price} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-volus-jet mb-1">Categoria</label>
-                    <select name="category" id="category" value={newProduct.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required>
+                    <label htmlFor="category" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Categoria</label>
+                    <select name="category" id="category" value={newProduct.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required>
                       <option value="">Selecione...</option>
                       {categories.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
                     </select>
                   </div>
                    <div>
-                    <label htmlFor="subcategory" className="block text-sm font-medium text-volus-jet mb-1">Subcategoria</label>
-                    <select name="subcategory" id="subcategory" value={newProduct.subcategory} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" disabled={!newProduct.category}>
+                    <label htmlFor="subcategory" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Subcategoria</label>
+                    <select name="subcategory" id="subcategory" value={newProduct.subcategory} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" disabled={!newProduct.category}>
                       <option value="">Selecione...</option>
                       {subcategoriesForModal.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                     </select>
@@ -427,12 +427,12 @@ const ProductList = () => {
                 </div>
                 
                  <div>
-                    <label htmlFor="stock" className="block text-sm font-medium text-volus-jet mb-1">Estoque</label>
-                    <input type="number" name="stock" id="stock" value={newProduct.stock} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50" required />
+                    <label htmlFor="stock" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Estoque</label>
+                    <input type="number" name="stock" id="stock" value={newProduct.stock} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                   </div>
 
                 <div className="flex justify-end gap-4 pt-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Cancelar</button>
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-100 dark:bg-volus-dark-700 text-gray-700 dark:text-volus-dark-500 rounded-md hover:bg-gray-200 dark:hover:bg-volus-dark-600">Cancelar</button>
                   <button type="submit" className="px-6 py-2 bg-volus-emerald text-white rounded-md hover:bg-volus-emerald/90">Salvar Produto</button>
                 </div>
               </form>

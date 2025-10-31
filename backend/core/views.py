@@ -18,9 +18,35 @@ from .serializers import (
     ProductSerializer,
     CategoryStructureSerializer,
     UserSerializer,
+    UserRegisterSerializer,
     UserUpdateSerializer,
     ChangePasswordSerializer,
 )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_api(request):
+    """
+    Endpoint de registro de novo usuário.
+    
+    POST /api/auth/register/
+    """
+    serializer = UserRegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        # Opcional: fazer login automático e retornar tokens
+        refresh = RefreshToken.for_user(user)
+        user_serializer = UserSerializer(user)
+
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': user_serializer.data
+        }, status=status.HTTP_201_CREATED)
+        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductViewSet(viewsets.ModelViewSet):

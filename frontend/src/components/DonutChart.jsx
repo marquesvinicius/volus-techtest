@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -12,21 +12,50 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const defaultColors = ['#1CCF6C', '#22D97A', '#4FE58F', '#7BEDA8', '#1F2B3A'];
 
 const DonutChart = ({ data = [], colors = defaultColors, currency = false, loading = false }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [redistributedData, setRedistributedData] = useState(null);
+  const chartRef = useRef(null);
+
   const total = useMemo(
     () => data.reduce((sum, item) => sum + item.value, 0),
     [data]
   );
+
+  // Função para redistribuir valores no hover
+  const redistributeValues = (hoveredIdx) => {
+    if (hoveredIdx === null || !data.length) return data;
+    
+    const hoveredValue = data[hoveredIdx].value;
+    const otherValues = data.filter((_, idx) => idx !== hoveredIdx);
+    const otherTotal = otherValues.reduce((sum, item) => sum + item.value, 0);
+    
+    // Redistribuir 30% do valor hover para os outros itens proporcionalmente
+    const redistributionAmount = hoveredValue * 0.3;
+    const newHoveredValue = hoveredValue - redistributionAmount;
+    
+    return data.map((item, idx) => {
+      if (idx === hoveredIdx) {
+        return { ...item, value: newHoveredValue };
+      } else {
+        const proportion = item.value / otherTotal;
+        const additionalValue = redistributionAmount * proportion;
+        return { ...item, value: item.value + additionalValue };
+      }
+    });
+  };
 
   const chartConfig = useMemo(() => {
     if (!data.length) {
       return null;
     }
 
+    const displayData = redistributedData || data;
+
     return {
       labels: data.map((item) => item.label),
       datasets: [
         {
-          data: data.map((item) => item.value),
+          data: displayData.map((item) => item.value),
           backgroundColor: data.map((_, index) => colors[index % colors.length]),
           hoverBackgroundColor: data.map((_, index) => colors[index % colors.length]),
           borderWidth: 0,
@@ -34,7 +63,7 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
         },
       ],
     };
-  }, [data, colors]);
+  }, [data, colors, redistributedData]);
 
   const formattedLegend = useMemo(() => {
     if (!data.length) return [];
@@ -69,36 +98,89 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
     layout: {
       padding: 20,
     },
+    animation: {
+      duration: 300,
+      easing: 'easeInOutQuart',
+    },
+    onHover: (event, elements) => {
+      if (elements.length > 0) {
+        const hoveredIdx = elements[0].index;
+        if (hoveredIdx !== hoveredIndex) {
+          setHoveredIndex(hoveredIdx);
+          setRedistributedData(redistributeValues(hoveredIdx));
+        }
+      } else {
+        setHoveredIndex(null);
+        setRedistributedData(null);
+      }
+    },
     plugins: {
       legend: {
         display: false,
       },
       tooltip: {
-        backgroundColor: '#1f2937',
-        padding: 12,
+        enabled: true,
+        backgroundColor: 'rgba(31, 41, 55, 0.95)',
+        titleColor: '#ffffff',
+        bodyColor: '#e5e7eb',
+        borderColor: '#1CCF6C',
+        borderWidth: 2,
+        cornerRadius: 12,
+        padding: 16,
+        displayColors: true,
         titleFont: {
           family: 'Roboto, sans-serif',
-          size: 14,
-          weight: '600',
+          size: 16,
+          weight: '700',
         },
         bodyFont: {
           family: 'Roboto, sans-serif',
-          size: 13,
+          size: 14,
           weight: '500',
         },
+        footerFont: {
+          family: 'Roboto, sans-serif',
+          size: 12,
+          weight: '400',
+        },
         callbacks: {
+          title: (context) => {
+            return ` ${context[0].label}`;
+          },
           label: (context) => {
-            const value = context.parsed;
-            const perc = total ? ((value / total) * 100).toFixed(1) : 0;
+            // Sempre usar os valores originais no tooltip
+            const originalValue = data[context.dataIndex]?.value || context.parsed;
+            const perc = total ? ((originalValue / total) * 100).toFixed(1) : 0;
             const formatter = new Intl.NumberFormat('pt-BR', {
               style: currency ? 'currency' : 'decimal',
               currency: 'BRL',
               maximumFractionDigits: currency ? 2 : 0,
             });
-            const formattedValue = currency ? formatter.format(value) : `${formatter.format(value)} itens`;
-            return `${formattedValue} • ${perc}%`;
+            const formattedValue = currency ? formatter.format(originalValue) : `${formatter.format(originalValue)} itens`;
+            return `Valor: ${formattedValue}`;
           },
-          title: (context) => context[0].label,
+          afterLabel: (context) => {
+            const originalValue = data[context.dataIndex]?.value || context.parsed;
+            const perc = total ? ((originalValue / total) * 100).toFixed(1) : 0;
+            const lines = [`Participação: ${perc}%`];
+            
+            if (context.dataIndex === hoveredIndex) {
+              lines.push('Redistribuindo valores dinamicamente...');
+            }
+            
+            // Adicionar informação sobre posição no ranking
+            const sortedData = [...data].sort((a, b) => b.value - a.value);
+            const position = sortedData.findIndex(item => item.value === originalValue) + 1;
+            lines.push(`Posição no ranking: ${position}º lugar`);
+            
+            return lines;
+          },
+          footer: (context) => {
+            if (context.length > 0) {
+              return ['', 'Passe o mouse sobre outras fatias para comparar'];
+            }
+            return [];
+          },
         },
       },
     },
@@ -107,7 +189,7 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
   return (
     <div className="flex flex-col">
       <div className="relative h-[360px]">
-        <Doughnut data={chartConfig} options={options} />
+        <Doughnut ref={chartRef} data={chartConfig} options={options} />
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-6">

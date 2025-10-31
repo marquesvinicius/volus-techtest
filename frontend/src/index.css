@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 @layer base {
   :root {
@@ -12,8 +12,13 @@
   }
 
   body {
-    @apply bg-gray-100 m-0 min-h-screen;
+    @apply bg-gray-100 dark:bg-volus-dark-900 m-0 min-h-screen;
     color: #333333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body.dark {
+    color: #e5e7eb;
   }
 
   * {
@@ -25,6 +30,10 @@
   .metric-card {
     background: linear-gradient(135deg, theme('colors.white') 0%, theme('colors.gray.50') 100%);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  }
+
+  .dark .metric-card {
+    background: linear-gradient(135deg, theme('colors.volus.dark.800') 0%, theme('colors.volus.dark.700') 100%);
   }
 
   .metric-card:hover {
@@ -47,5 +56,105 @@
   
   .metric-card:hover .metric-card-bar {
     opacity: 1;
+  }
+
+  /* Animações para inputs com feedback visual */
+  @keyframes gradient-x {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+  }
+
+  @keyframes progress-bar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  .animate-gradient-x {
+    animation: gradient-x 2s ease infinite;
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  .animate-progress-bar {
+    animation: progress-bar 3s linear;
+  }
+
+  /* Animação para chips de filtro */
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3) translateY(-20px);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05) translateY(-5px);
+    }
+    70% {
+      transform: scale(0.95) translateY(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  /* Animação especial para botão de reset */
+  @keyframes reset-pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    25% {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.3);
+    }
+    50% {
+      transform: scale(1.05) rotate(5deg);
+      box-shadow: 0 0 0 20px rgba(239, 68, 68, 0.1);
+    }
+    75% {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+  }
+
+  .animate-reset-pulse {
+    animation: reset-pulse 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Animação lenta para ícones do Modo MALUQUICE */
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
   }
 }

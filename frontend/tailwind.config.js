@@ -4,6 +4,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -25,6 +26,14 @@ module.exports = {
             700: '#374151',
             800: '#1f2937',
             900: '#111827',
+          },
+          // Paleta para Dark Mode
+          dark: {
+            900: '#0D1117', // Quase preto azulado (background principal)
+            800: '#161B22', // Cinza azulado escuro (cards, sidebar)
+            700: '#21262D', // Borda e divisórias
+            600: '#8B949E', // Texto secundário
+            500: '#C9D1D9', // Texto principal
           }
         }
       },

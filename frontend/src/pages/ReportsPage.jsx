@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import productService from '../services/productService';
 import MetricCard from '../components/MetricCard'; // Importar o MetricCard
 import { Line } from 'react-chartjs-2';
+import { useTheme } from '../context/ThemeContext';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +38,7 @@ const Icons = {
 const ReportsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,8 +130,8 @@ const ReportsPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet">Relatórios</h1>
-        <p className="text-volus-davys-gray mt-1">Análise detalhada e insights do seu inventário.</p>
+        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Relatórios</h1>
+        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Análise detalhada e insights do seu inventário.</p>
       </div>
 
       {/* Cards de Métricas */}
@@ -165,32 +167,60 @@ const ReportsPage = () => {
       </div>
 
       {/* Gráfico de Linha */}
-      <div className="bg-white p-6 rounded-2xl shadow-card">
-        <h2 className="text-xl font-semibold text-volus-jet mb-4">Distribuição por Faixa de Preço</h2>
+      <div className="bg-white dark:bg-volus-dark-800 p-6 rounded-2xl shadow-card dark:border dark:border-volus-dark-700">
+        <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Distribuição por Faixa de Preço</h2>
         <div className="h-64">
-          <Line data={lineChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+          <Line data={lineChartData} options={{ 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: {
+                  color: isDarkMode ? '#C9D1D9' : '#333333',
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: isDarkMode ? '#8B949E' : '#5e5e5e',
+                },
+                grid: {
+                  color: isDarkMode ? 'rgba(139, 148, 158, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                }
+              },
+              y: {
+                ticks: {
+                  color: isDarkMode ? '#8B949E' : '#5e5e5e',
+                },
+                grid: {
+                  color: isDarkMode ? 'rgba(139, 148, 158, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                }
+              }
+            }
+          }} />
         </div>
       </div>
 
       {/* Tabela de Categorias */}
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-semibold text-volus-jet">Distribuição por Categoria</h2>
+      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card overflow-hidden dark:border dark:border-volus-dark-700">
+        <div className="p-6 border-b dark:border-volus-dark-700">
+          <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Distribuição por Categoria</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-volus-dark-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Quantidade</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Percentual</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-volus-dark-600 uppercase">Categoria</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-volus-dark-600 uppercase">Quantidade</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-volus-dark-600 uppercase">Percentual</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-volus-dark-700">
               {reportData.categoriesDistribution.map(cat => (
-                <tr key={cat.name} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{cat.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-700">{cat.count}</td>
+                <tr key={cat.name} className="hover:bg-gray-50 dark:hover:bg-volus-dark-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-volus-dark-500">{cat.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-700 dark:text-volus-dark-600">{cat.count}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-emerald-600 font-semibold">{cat.percentage}%</td>
                 </tr>
               ))}

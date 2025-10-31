@@ -125,16 +125,16 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet">Dashboard</h1>
-        <p className="text-volus-davys-gray mt-1">Visão geral do desempenho comercial</p>
+        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Dashboard</h1>
+        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Visão geral do desempenho comercial</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-8">
-        <div className="bg-white rounded-3xl shadow-card border border-white/60 p-6">
+        <div className="bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-volus-jet">Vendas por Categoria</h2>
-              <p className="text-sm text-volus-davys-gray mt-1">Distribuição de receita por categoria de produto</p>
+              <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Vendas por Categoria</h2>
+              <p className="text-sm text-volus-davys-gray dark:text-volus-dark-600 mt-1">Distribuição de receita por categoria de produto</p>
             </div>
           </div>
 
@@ -182,9 +182,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-card border border-white/60 p-6">
-        <h2 className="text-xl font-semibold text-volus-jet mb-4">Atividade recente</h2>
-        <div className="flex items-center justify-center py-10 text-volus-davys-gray">
+      <div className="bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+        <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Atividade recente</h2>
+        <div className="flex items-center justify-center py-10 text-volus-davys-gray dark:text-volus-dark-600">
           Este módulo será implementado nas próximas etapas.
         </div>
       </div>

@@ -81,38 +81,38 @@ const StockControlPage = () => {
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} />
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-volus-jet">Controle de Estoque</h1>
-          <p className="text-volus-davys-gray mt-1">Monitoramento e gerenciamento de quantidades em tempo real</p>
+          <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Controle de Estoque</h1>
+          <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Monitoramento e gerenciamento de quantidades em tempo real</p>
         </div>
 
         {/* Stock Table */}
-        <div className="bg-white rounded-2xl shadow-card border border-white/60 overflow-hidden">
+        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-volus-dark-900 border-b border-gray-200 dark:border-volus-dark-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Código</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Produto</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet">Estoque Atual</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet">Status</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet">Ação</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Código</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Produto</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Estoque Atual</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Status</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Ação</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((product) => {
                   const status = getStatus(product.stock);
                   return (
-                    <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray">{product.code}</td>
-                      <td className="px-6 py-4 text-sm text-volus-jet font-medium">{product.name}</td>
-                      <td className="px-6 py-4 text-center text-sm font-semibold text-volus-jet">
+                    <tr key={product.id} className="border-b border-gray-200 dark:border-volus-dark-700 hover:bg-gray-50 dark:hover:bg-volus-dark-700 transition">
+                      <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray dark:text-volus-dark-600">{product.code}</td>
+                      <td className="px-6 py-4 text-sm text-volus-jet font-medium dark:text-volus-dark-500">{product.name}</td>
+                      <td className="px-6 py-4 text-center text-sm font-semibold text-volus-jet dark:text-volus-dark-500">
                         {editingId === product.id ? (
                           <input
                             type="number"
                             value={editingValue}
                             onChange={(e) => setEditingValue(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSaveStock(product.id)}
-                            className="w-20 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+                            className="w-20 px-2 py-1 border border-gray-300 dark:border-volus-dark-600 dark:bg-volus-dark-900 rounded text-center focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
                             autoFocus
                             disabled={saving}
                           />
@@ -137,7 +137,7 @@ const StockControlPage = () => {
                             </button>
                             <button
                               onClick={() => setEditingId(null)}
-                              className="px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded transition"
+                              className="px-3 py-1 text-xs font-medium text-gray-600 dark:text-volus-dark-600 hover:bg-gray-100 dark:hover:bg-volus-dark-700 rounded transition"
                             >
                               Cancelar
                             </button>
@@ -145,7 +145,7 @@ const StockControlPage = () => {
                         ) : (
                           <button
                             onClick={() => startEdit(product.id, product.stock)}
-                            className="px-3 py-1 text-xs font-medium text-volus-emerald hover:bg-emerald-50 rounded transition"
+                            className="px-3 py-1 text-xs font-medium text-volus-emerald hover:bg-emerald-50 dark:hover:bg-volus-emerald/10 rounded transition"
                           >
                             Editar
                           </button>

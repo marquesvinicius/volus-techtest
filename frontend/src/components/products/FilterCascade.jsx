@@ -19,8 +19,36 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLevel2, setShowLevel2] = useState(false);
   const [showLevel3, setShowLevel3] = useState(false);
+  const [konamiSequence, setKonamiSequence] = useState([]);
+  const [showKonamiEasterEgg, setShowKonamiEasterEgg] = useState(false);
+  const [magicWordCount, setMagicWordCount] = useState(0);
 
   const crazyMode = isCrazyModeEnabled();
+
+  // Sequência Konami: ↑↑↓↓←→←→BA
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+  // Easter egg do código Konami
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!crazyMode) return;
+
+      setKonamiSequence(prev => {
+        const newSequence = [...prev, e.code].slice(-10);
+        
+        if (newSequence.length === 10 && newSequence.every((key, index) => key === konamiCode[index])) {
+          setShowKonamiEasterEgg(true);
+          setTimeout(() => setShowKonamiEasterEgg(false), 5000);
+          return [];
+        }
+        
+        return newSequence;
+      });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [crazyMode]);
 
   // Estrutura de dados local para facilitar acesso
   const [filterData, setFilterData] = useState({});
@@ -118,11 +146,25 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
         item: selectedItem,
       });
     }
-  }, [selectedCategory, selectedSubcategory, selectedItem, onSelectionChange]);
+  }, [selectedCategory, selectedSubcategory, selectedItem]);
 
   const handleCategoryChange = (e) => {
     const value = e.target.value;
     setSelectedCategory(value);
+
+    // Easter egg: palavra mágica "volus"
+    if (crazyMode && value.toLowerCase().includes('volus')) {
+      setMagicWordCount(prev => {
+        const newCount = prev + 1;
+        if (newCount === 3) {
+          setTimeout(() => {
+            alert('🎭 PALAVRA MÁGICA DETECTADA! A magia de Vólus está em toda parte! ✨');
+          }, 100);
+          return 0;
+        }
+        return newCount;
+      });
+    }
   };
 
   const handleSubcategoryChange = (e) => {
@@ -151,26 +193,43 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {/* Easter Egg Konami */}
+      {showKonamiEasterEgg && (
+        <div className="absolute -top-4 left-0 right-0 z-50 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-white p-4 rounded-lg shadow-2xl animate-bounce">
+          <div className="text-center">
+            <div className="text-2xl mb-2">KONAMI CODE ATIVADO!</div>
+            <div className="text-sm">Você é um verdadeiro gamer! Todos os filtros secretos foram desbloqueados!</div>
+            <div className="mt-2 text-lg animate-pulse">↑↑↓↓←→←→BA</div>
+          </div>
+        </div>
+      )}
+
       {/* Nível 1: Categoria */}
       <div className="filter-level">
-        <label htmlFor="categorySelect" className="block text-sm font-medium text-volus-jet mb-2">
-          Categoria
+        <label htmlFor="categorySelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+        }`}>
+          {crazyMode ? 'Categoria Mágica' : 'Categoria'}
         </label>
         <select
           id="categorySelect"
           value={selectedCategory}
           onChange={handleCategoryChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 transition-all duration-200 bg-white"
+          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+            crazyMode 
+              ? 'border-purple-300 focus:ring-purple-200 focus:border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:bg-gradient-to-r dark:from-purple-900 dark:to-pink-900 dark:border-purple-700 dark:text-gray-200' 
+              : 'border-gray-300 focus:ring-volus-emerald/50 focus:border-volus-emerald bg-white dark:bg-volus-dark-800 dark:border-volus-dark-700 dark:text-volus-dark-500'
+          }`}
           aria-label="Selecionar categoria"
         >
           <option value="">Selecione uma categoria...</option>
           {crazyMode && (
-            <option value="*">✨ Qualquer (Coringa)</option>
+            <option value="*">Qualquer (Coringa Mágico)</option>
           )}
           {categoryOptions.map((cat, index) => (
             <option key={`${cat.name}-${index}`} value={cat.name}>
-              {cat.display_name || cat.name}
+              {crazyMode ? `${cat.display_name || cat.name}` : (cat.display_name || cat.name)}
             </option>
           ))}
         </select>
@@ -184,26 +243,39 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
             : 'opacity-0 max-h-0 overflow-hidden -translate-y-2'
         }`}
       >
-        <label htmlFor="subcategorySelect" className="block text-sm font-medium text-volus-jet mb-2">
-          Subcategoria
+        <label htmlFor="subcategorySelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+        }`}>
+          {crazyMode ? 'Subcategoria Especial' : 'Subcategoria'}
         </label>
         <select
           id="subcategorySelect"
           value={selectedSubcategory}
           onChange={handleSubcategoryChange}
           disabled={!showLevel2}
-          className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 transition-all duration-200 ${
-            !showLevel2 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white'
+          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+            !showLevel2 
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-300 dark:bg-volus-dark-900 dark:border-volus-dark-700 dark:text-volus-dark-600' 
+              : crazyMode
+                ? 'border-purple-300 focus:ring-purple-200 focus:border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:bg-gradient-to-r dark:from-purple-900 dark:to-pink-900 dark:border-purple-700 dark:text-gray-200'
+                : 'border-gray-300 focus:ring-volus-emerald/50 focus:border-volus-emerald bg-white dark:bg-volus-dark-800 dark:border-volus-dark-700 dark:text-volus-dark-500'
           }`}
           aria-label="Selecionar subcategoria"
         >
           <option value="">Selecione uma subcategoria...</option>
           {availableSubcategories.map((subcat, index) => (
             <option key={`${subcat.name}-${index}`} value={subcat.name}>
-              {subcat.name}
+              {crazyMode ? `${subcat.name}` : subcat.name}
             </option>
           ))}
         </select>
+        
+        {/* Aviso da regra oculta */}
+        {crazyMode && selectedCategory === 'eletronicos' && selectedSubcategory === 'Smartphones' && (
+          <div className="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 text-xs animate-pulse">
+            Regra Oculta Ativada: Alguns itens foram filtrados automaticamente!
+          </div>
+        )}
       </div>
 
       {/* Nível 3: Item */}
@@ -214,27 +286,55 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
             : 'opacity-0 max-h-0 overflow-hidden -translate-y-2'
         }`}
       >
-        <label htmlFor="itemSelect" className="block text-sm font-medium text-volus-jet mb-2">
-          Item (opcional)
+        <label htmlFor="itemSelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+        }`}>
+          {crazyMode ? 'Item Mágico (opcional)' : 'Item (opcional)'}
         </label>
         <select
           id="itemSelect"
           value={selectedItem}
           onChange={handleItemChange}
           disabled={!showLevel3}
-          className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 transition-all duration-200 ${
-            !showLevel3 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white'
+          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+            !showLevel3 
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-300 dark:bg-volus-dark-900 dark:border-volus-dark-700 dark:text-volus-dark-600' 
+              : crazyMode
+                ? 'border-purple-300 focus:ring-purple-200 focus:border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:bg-gradient-to-r dark:from-purple-900 dark:to-pink-900 dark:border-purple-700 dark:text-gray-200'
+                : 'border-gray-300 focus:ring-volus-emerald/50 focus:border-volus-emerald bg-white dark:bg-volus-dark-800 dark:border-volus-dark-700 dark:text-volus-dark-500'
           }`}
           aria-label="Selecionar item"
         >
           <option value="">Selecione um item...</option>
           {availableItems.map((item, index) => (
             <option key={`${item}-${index}`} value={item}>
-              {item}
+              {crazyMode ? `${item}` : item}
             </option>
           ))}
         </select>
+        
+        {/* Dica sobre múltipla seleção */}
+        {showLevel3 && (
+          <div className={`mt-2 text-xs flex items-center gap-1 ${
+            crazyMode ? 'text-purple-600' : 'text-volus-davys-gray'
+          }`}>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {crazyMode 
+              ? 'Você pode selecionar múltiplos itens mágicos! Cada seleção vira um chip especial' 
+              : 'Você pode selecionar múltiplos itens! Cada seleção vira um chip removível'
+            }
+          </div>
+        )}
       </div>
+
+      {/* Contador de sequência Konami (debug) */}
+      {crazyMode && konamiSequence.length > 0 && (
+        <div className="text-xs text-gray-500 text-center">
+          Sequência: {konamiSequence.slice(-5).join(' → ')} ({konamiSequence.length}/10)
+        </div>
+      )}
     </div>
   );
 };

@@ -1,3 +1,5 @@
+import { useTheme } from '../context/ThemeContext';
+
 /**
  * Componente de Card de Métrica com estilo aprimorado
  */
@@ -10,12 +12,14 @@ const MetricCard = ({
   deltaPositive = true,
 }) => {
 
-  const deltaBg = deltaPositive ? 'bg-emerald-50 text-volus-emerald' : 'bg-red-50 text-red-500';
-  const iconBg = `${accentColor}22`;
+  const { isDarkMode } = useTheme();
+
+  const deltaBg = deltaPositive ? 'bg-emerald-50 text-volus-emerald dark:bg-volus-emerald/10 dark:text-volus-emerald' : 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400';
+  const iconBg = `${accentColor}${isDarkMode ? '33' : '22'}`;
 
   return (
     <div
-      className="metric-card relative overflow-hidden rounded-2xl p-5 border border-transparent"
+      className="metric-card bg-white dark:bg-volus-dark-800 relative overflow-hidden rounded-2xl p-5 border border-transparent dark:border-volus-dark-700"
       style={{ '--metric-accent-color': accentColor }}
     >
       <div className="metric-card-bar"></div>
@@ -24,7 +28,7 @@ const MetricCard = ({
       <div className="relative pl-3">
         {/* Header do Card */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wide text-volus-davys-gray">
+          <span className="text-xs font-semibold uppercase tracking-wide text-volus-davys-gray dark:text-volus-dark-600">
             {title}
           </span>
           {Icon && (
@@ -38,7 +42,7 @@ const MetricCard = ({
         </div>
 
         {/* Valor Principal */}
-        <p className="mt-2 text-3xl font-bold text-volus-jet tracking-tight">
+        <p className="mt-2 text-3xl font-bold text-volus-jet dark:text-volus-dark-500 tracking-tight">
           {value}
         </p>
 
@@ -61,7 +65,7 @@ const MetricCard = ({
                   <path d="M2 4l4 4 4-4" />
                 )}
               </svg>
-              <span>{delta}</span>
+              <span className="dark:text-volus-dark-500">{delta}</span>
             </div>
           </div>
         )}

@@ -87,6 +87,43 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.is_superuser or obj.is_staff
 
 
+class UserRegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer para registro de novos usuários.
+    """
+    password = serializers.CharField(write_only=True, required=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'password',
+            'password_confirm',
+            'email',
+            'first_name',
+            'last_name',
+        )
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError(
+                {"password_confirm": "As senhas não coincidem."}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer para atualização de perfil (campos editáveis).

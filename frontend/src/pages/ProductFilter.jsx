@@ -207,6 +207,15 @@ const ProductFilter = () => {
 
   // Reseta todos os filtros
   const handleReset = () => {
+    // Animação especial antes de resetar
+    const resetButton = document.querySelector('.reset-button');
+    if (resetButton) {
+      resetButton.classList.add('animate-reset-pulse');
+      setTimeout(() => {
+        resetButton.classList.remove('animate-reset-pulse');
+      }, 600);
+    }
+
     setSelection({
       category: '',
       subcategory: '',
@@ -235,19 +244,19 @@ const ProductFilter = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet">Busca Avançada de Produtos</h1>
-        <p className="text-volus-davys-gray mt-1">
+        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Busca Avançada de Produtos</h1>
+        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
           Filtre produtos por categoria, subcategoria e item com busca em tempo real
         </p>
       </div>
 
       {/* Busca em Tempo Real */}
-      <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6">
-        <label htmlFor="searchInput" className="block text-sm font-medium text-volus-jet mb-2">
+      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+        <label htmlFor="searchInput" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-2">
           Buscar produtos
         </label>
         <div className="relative">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-volus-davys-gray">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-volus-davys-gray dark:text-volus-dark-600">
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -259,7 +268,7 @@ const ProductFilter = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar em tempo real (nome ou código)..."
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 transition-all duration-200"
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-volus-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 transition-all duration-200 bg-transparent dark:text-volus-dark-500"
             aria-label="Campo de busca"
           />
           {searchLoading && (
@@ -271,15 +280,27 @@ const ProductFilter = () => {
       </div>
 
       {/* Filtros em Cascata */}
-      <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6">
+      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-volus-jet">Filtros em Cascata</h2>
+          <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Filtros em Cascata</h2>
           <button
             onClick={handleReset}
-            className="px-3 py-1 text-sm text-volus-emerald hover:bg-emerald-50 rounded-lg transition"
+            className="reset-button group relative px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg overflow-hidden"
             aria-label="Limpar todos os filtros"
           >
-            Limpar tudo
+            {/* Efeito de ondas */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+            
+            {/* Ícone e texto */}
+            <span className="relative flex items-center gap-2">
+              <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Resetar Filtros
+            </span>
+            
+            {/* Partículas animadas */}
+            <span className="absolute top-1/2 left-1/2 w-2 h-2 bg-white/30 rounded-full transform -translate-x-1/2 -translate-y-1/2 group-hover:animate-ping"></span>
           </button>
         </div>
         <FilterCascade
@@ -294,10 +315,10 @@ const ProductFilter = () => {
       )}
 
       {/* Resultados */}
-      <div className="bg-white rounded-2xl shadow-card border border-white/60 p-6">
+      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-volus-jet">Resultados da Busca</h2>
-          <span className="text-sm text-volus-davys-gray">
+          <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Resultados da Busca</h2>
+          <span className="text-sm text-volus-davys-gray dark:text-volus-dark-600">
             {filteredProducts.length} produto(s) encontrado(s)
           </span>
         </div>
@@ -305,32 +326,32 @@ const ProductFilter = () => {
         {filteredProducts.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-volus-dark-900 border-b border-gray-200 dark:border-volus-dark-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Código</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Nome</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Categoria</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet">Subcategoria</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-volus-jet">Preço</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet">Estoque</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Código</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Nome</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Categoria</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Subcategoria</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Preço</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Estoque</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
                   <tr
                     key={product.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition"
+                    className="border-b border-gray-200 dark:border-volus-dark-700 hover:bg-gray-50 dark:hover:bg-volus-dark-700 transition"
                   >
-                    <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray">
+                    <td className="px-6 py-4 text-sm font-mono text-volus-davys-gray dark:text-volus-dark-600">
                       {product.code}
                     </td>
-                    <td className="px-6 py-4 text-sm text-volus-jet font-medium">
+                    <td className="px-6 py-4 text-sm text-volus-jet font-medium dark:text-volus-dark-500">
                       {product.name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-volus-davys-gray">
+                    <td className="px-6 py-4 text-sm text-volus-davys-gray dark:text-volus-dark-600">
                       {product.category_display || product.category}
                     </td>
-                    <td className="px-6 py-4 text-sm text-volus-davys-gray">
+                    <td className="px-6 py-4 text-sm text-volus-davys-gray dark:text-volus-dark-600">
                       {product.subcategory || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-volus-emerald">
@@ -340,8 +361,8 @@ const ProductFilter = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           product.stock > 0
-                            ? 'bg-emerald-50 text-volus-emerald'
-                            : 'bg-red-50 text-red-600'
+                            ? 'bg-emerald-50 text-volus-emerald dark:bg-volus-emerald/10 dark:text-volus-emerald'
+                            : 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
                         }`}
                       >
                         {product.stock}
@@ -353,7 +374,7 @@ const ProductFilter = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12 text-volus-davys-gray">
+          <div className="text-center py-12 text-volus-davys-gray dark:text-volus-dark-600">
             <p>Nenhum produto encontrado com os filtros aplicados.</p>
             <p className="text-sm mt-2">
               Tente ajustar os filtros ou limpar a busca.

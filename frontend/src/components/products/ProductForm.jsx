@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import productService from '../../services/productService';
 import { isChecksumValid } from '../../utils/validation';
+import AnimatedInput from '../AnimatedInput';
 
 const ProductForm = ({ product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -104,22 +105,33 @@ const ProductForm = ({ product, onSave, onCancel }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nome do Produto */}
             <div className="md:col-span-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
-              <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`} />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+              <AnimatedInput
+                type="text"
+                name="name"
+                id="name"
+                value={formData.name}
+                onChange={handleChange}
+                label="Nome do Produto"
+                placeholder="Digite o nome do produto"
+                error={errors.name}
+                required
+              />
             </div>
 
             {/* SKU */}
             <div>
-              <label htmlFor="sku" className="block text-sm font-medium text-gray-700 mb-1">SKU (Código)</label>
-              <div className="relative">
-                <input type="text" name="sku" id="sku" value={formData.sku} onChange={handleSkuChange} className={`w-full p-2 border rounded-md pr-10 ${errors.sku ? 'border-red-500' : 'border-gray-300'}`} />
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  {isSkuValid === true && <span className="text-green-500">✓</span>}
-                  {isSkuValid === false && <span className="text-red-500">✗</span>}
-                </span>
-              </div>
-              {errors.sku && <p className="text-red-500 text-xs mt-1">{errors.sku}</p>}
+              <AnimatedInput
+                type="text"
+                name="sku"
+                id="sku"
+                value={formData.sku}
+                onChange={handleSkuChange}
+                label="SKU (Código)"
+                placeholder="Digite o código SKU"
+                error={errors.sku}
+                success={isSkuValid === true ? "SKU válido!" : null}
+                required
+              />
             </div>
 
             {/* Categoria */}
@@ -136,16 +148,33 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 
             {/* Preço */}
             <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
-              <input type="number" name="price" id="price" step="0.01" value={formData.price} onChange={handleChange} className={`w-full p-2 border rounded-md ${errors.price ? 'border-red-500' : 'border-gray-300'}`} />
-              {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
+              <AnimatedInput
+                type="number"
+                name="price"
+                id="price"
+                step="0.01"
+                value={formData.price}
+                onChange={handleChange}
+                label="Preço (R$)"
+                placeholder="0,00"
+                error={errors.price}
+                required
+              />
             </div>
 
             {/* Estoque */}
             <div>
-              <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">Estoque</label>
-              <input type="number" name="stock" id="stock" value={formData.stock} onChange={handleChange} className={`w-full p-2 border rounded-md ${errors.stock ? 'border-red-500' : 'border-gray-300'}`} />
-              {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
+              <AnimatedInput
+                type="number"
+                name="stock"
+                id="stock"
+                value={formData.stock}
+                onChange={handleChange}
+                label="Estoque"
+                placeholder="Quantidade em estoque"
+                error={errors.stock}
+                required
+              />
             </div>
 
             {/* Descrição */}

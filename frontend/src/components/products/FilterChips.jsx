@@ -36,40 +36,65 @@ const FilterChips = ({ chips = [], onRemoveChip }) => {
   };
 
   return (
-    <div className="chips-container bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <h3 className="text-sm font-semibold text-volus-jet mb-3">Filtros Ativos:</h3>
-      <div className="flex flex-wrap gap-2" role="list">
-        {chips.map((chip) => {
+    <div className="chips-container bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-volus-jet flex items-center gap-2">
+          <svg className="w-4 h-4 text-volus-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+          </svg>
+          Filtros Ativos ({chips.length})
+        </h3>
+        {chips.length > 1 && (
+          <button
+            onClick={() => chips.forEach(chip => handleRemove(chip.id, chip.type, chip.value))}
+            className="text-xs text-volus-davys-gray hover:text-red-600 transition-colors duration-200"
+          >
+            Limpar todos
+          </button>
+        )}
+      </div>
+      
+      <div className="flex flex-wrap gap-3" role="list">
+        {chips.map((chip, index) => {
           const chipId = chip.id || `chip-${chip.type}-${chip.value}`;
           const chipColor = getChipColor(chip.type);
 
           return (
             <div
               key={chipId}
-              className={`filter-chip group flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ${
+              className={`filter-chip group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 transition-all duration-300 transform ${
                 chipColor
               } ${
                 crazyMode
-                  ? 'hover:scale-110 hover:shadow-lg hover:rotate-1'
-                  : 'hover:shadow-md'
+                  ? 'hover:scale-110 hover:shadow-lg hover:rotate-1 animate-bounce-in'
+                  : 'hover:shadow-md hover:scale-105'
               }`}
+              style={{
+                animationDelay: `${index * 100}ms`,
+              }}
               role="listitem"
             >
-              <span>{chip.text}</span>
+              {/* Ícone do tipo de filtro */}
+              <span className="flex-shrink-0">
+                
+              </span>
+              
+              <span className="font-medium">{chip.text}</span>
+              
               <button
                 onClick={() => handleRemove(chipId, chip.type, chip.value)}
-                className={`chip-remove opacity-70 hover:opacity-100 transition-opacity ${
-                  crazyMode ? 'hover:rotate-90' : ''
+                className={`chip-remove flex-shrink-0 w-5 h-5 rounded-full bg-white/50 hover:bg-white flex items-center justify-center opacity-70 hover:opacity-100 transition-all duration-200 ${
+                  crazyMode ? 'hover:rotate-90 hover:scale-110' : 'hover:scale-110'
                 }`}
                 aria-label={`Remover filtro ${chip.text}`}
                 type="button"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3 h-3"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -80,6 +105,14 @@ const FilterChips = ({ chips = [], onRemoveChip }) => {
             </div>
           );
         })}
+      </div>
+      
+      {/* Indicador visual de que mais filtros podem ser adicionados */}
+      <div className="mt-4 text-xs text-volus-davys-gray flex items-center gap-1">
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Continue selecionando nos filtros acima para adicionar mais chips
       </div>
     </div>
   );

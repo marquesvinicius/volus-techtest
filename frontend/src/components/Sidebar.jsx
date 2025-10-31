@@ -1,12 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { isCrazyModeEnabled } from '../utils/validation';
 
 const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState([]);
+  const [crazyModeActive, setCrazyModeActive] = useState(false);
+  const [menuItemClicks, setMenuItemClicks] = useState({});
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
   const location = useLocation();
   const { logout } = useAuth();
+
+  // Verifica o modo MALUQUICE periodicamente
+  useEffect(() => {
+    const checkCrazyMode = () => {
+      setCrazyModeActive(isCrazyModeEnabled());
+    };
+    
+    checkCrazyMode();
+    const interval = setInterval(checkCrazyMode, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Aplicar estado salvo do localStorage ao carregar
   useEffect(() => {
@@ -37,12 +53,63 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     );
   };
 
+  // Comportamentos especiais do Modo MALUQUICE
+  const handleMenuItemClick = (itemId) => {
+    if (!crazyModeActive) return;
+
+    setMenuItemClicks(prev => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1
+    }));
+
+    // Easter egg: clicar 5 vezes no Dashboard
+    if (itemId === 'dashboard' && (menuItemClicks.dashboard || 0) >= 4) {
+      setShowEasterEgg(true);
+      setTimeout(() => setShowEasterEgg(false), 3000);
+    }
+  };
+
+  const getMenuItemClasses = (item, isSubmenuActive) => {
+    let baseClasses = `flex items-center gap-3 px-3 rounded-lg transition-all duration-300 ${
+      collapsed ? 'justify-center py-2.5' : 'py-3 md:py-2.5'
+    }`;
+
+    if (isSubmenuActive) {
+      baseClasses += ' bg-emerald-50 text-volus-emerald dark:bg-volus-emerald/10';
+    } else {
+      baseClasses += ' text-volus-jet dark:text-volus-dark-500 hover:bg-gray-50 dark:hover:bg-volus-dark-700';
+    }
+
+    // Comportamentos especiais do Modo MALUQUICE
+    if (crazyModeActive) {
+      const clickCount = menuItemClicks[item.id] || 0;
+      
+      if (clickCount > 0) {
+        baseClasses += ' animate-pulse';
+      }
+      if (clickCount > 2) {
+        baseClasses += ' hover:rotate-3 hover:scale-105';
+      }
+      if (clickCount > 4) {
+        baseClasses += ' animate-bounce bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-500/10 dark:to-pink-500/10';
+      }
+    }
+
+    return baseClasses;
+  };
+
   const menuItems = [
     {
       id: 'dashboard',
-      label: 'Dashboard',
+      label: crazyModeActive && (menuItemClicks.dashboard || 0) > 3 ? 'Dashboard Mágico' : 'Dashboard',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+          className={crazyModeActive ? 'animate-spin-slow' : ''}
+        >
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
           <rect x="14" y="14" width="7" height="7"></rect>
@@ -53,10 +120,16 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     },
     {
       id: 'produtos',
-      label: 'Produtos',
+      label: crazyModeActive ? 'Produtos Mágicos' : 'Produtos',
       path: '/produtos', // Adicionado path para o item pai
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+          className={crazyModeActive ? 'hover:animate-bounce' : ''}
+        >
           <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
           <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
@@ -70,9 +143,15 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     },
     {
       id: 'relatorios',
-      label: 'Relatórios',
+      label: crazyModeActive ? 'Relatórios Fantásticos' : 'Relatórios',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+          className={crazyModeActive ? 'hover:animate-pulse' : ''}
+        >
           <line x1="12" y1="20" x2="12" y2="10"></line>
           <line x1="18" y1="20" x2="18" y2="4"></line>
           <line x1="6" y1="20" x2="6" y2="16"></line>
@@ -82,9 +161,15 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     },
     {
       id: 'configuracoes',
-      label: 'Configurações',
+      label: crazyModeActive ? 'Configurações Especiais' : 'Configurações',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+          className={crazyModeActive ? 'animate-spin-slow' : ''}
+        >
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path>
           <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
@@ -122,9 +207,21 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
         ></div>
       )}
 
+      {/* Easter Egg Modal */}
+      {showEasterEgg && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-8 rounded-2xl text-white text-center animate-bounce shadow-2xl">
+            <div className="text-4xl mb-4"></div>
+            <h2 className="text-2xl font-bold mb-2">MODO MALUQUICE ATIVADO!</h2>
+            <p className="text-lg">Você descobriu o easter egg do menu!</p>
+            <div className="mt-4 text-4xl animate-spin"></div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar - Mobile sempre expandido */}
       <aside
-        className={`fixed top-20 md:top-20 bottom-0 bg-white border-r border-gray-200 z-40 transition-all duration-300 flex flex-col ${
+        className={`fixed top-20 md:top-20 bottom-0 bg-white dark:bg-volus-dark-800 border-r border-gray-200 dark:border-volus-dark-700 z-40 transition-all duration-300 flex flex-col ${
           collapsed && 'md:w-20'
         } ${
           !collapsed || isOpen ? 'w-64' : 'w-64 md:w-20'
@@ -132,6 +229,8 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
           isOpen
             ? 'left-0'
             : '-left-64 md:left-0'
+        } ${
+          crazyModeActive ? 'bg-gradient-to-b from-white via-purple-50 to-pink-50 dark:from-volus-dark-800 dark:via-purple-900/20 dark:to-pink-900/20' : 'bg-white'
         }`}
       >
         <div className="flex-1 flex flex-col overflow-y-auto">
@@ -141,7 +240,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
             <div className={`hidden md:flex ${collapsed ? 'justify-center' : 'justify-end'} mb-4`}>
           <button
             onClick={toggleCollapse}
-            className="p-2 hover:bg-gray-100 rounded-lg transition text-volus-davys-gray"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-volus-dark-700 rounded-lg transition text-volus-davys-gray dark:text-volus-dark-600"
             aria-label={collapsed ? 'Expandir menu' : 'Colapsar menu'}
             title={collapsed ? 'Expandir menu' : 'Colapsar menu'}
           >
@@ -169,12 +268,9 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                       onClick={(e) => {
                         if (!item.path) e.preventDefault();
                         toggleSubmenu(item.id);
+                        handleMenuItemClick(item.id);
                       }}
-                      className={`w-full flex items-center gap-3 px-3 rounded-lg transition group ${
-                        isSubmenuActive(item)
-                          ? 'bg-emerald-50 text-volus-emerald'
-                          : 'text-volus-jet hover:bg-gray-50'
-                      } ${collapsed ? 'justify-center py-2.5' : 'py-3 md:py-2.5'}`}
+                      className={`w-full ${getMenuItemClasses(item, isSubmenuActive(item))}`}
                       title={collapsed ? item.label : ''}
                     >
                       <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
@@ -208,7 +304,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                               className={`block px-3 rounded-lg transition ${
                                 isActive(subitem.path)
                                   ? 'bg-volus-emerald text-white'
-                                  : 'text-volus-davys-gray hover:bg-gray-50'
+                                  : 'text-volus-davys-gray dark:text-volus-dark-600 hover:bg-gray-50 dark:hover:bg-volus-dark-700'
                               } py-2.5 md:py-2 text-base md:text-sm`}
                               onClick={onClose}
                             >
@@ -223,13 +319,12 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                   /* Item Simples */
                   <Link
                     to={item.path}
-                    className={`flex items-center gap-3 px-3 rounded-lg transition ${
-                      isActive(item.path)
-                        ? 'bg-emerald-50 text-volus-emerald'
-                        : 'text-volus-jet hover:bg-gray-50'
-                    } ${collapsed ? 'justify-center py-2.5' : 'py-3 md:py-2.5'}`}
+                    className={getMenuItemClasses(item, isActive(item.path))}
                     title={collapsed ? item.label : ''}
-                    onClick={onClose}
+                    onClick={(e) => {
+                      onClose();
+                      handleMenuItemClick(item.id);
+                    }}
                   >
                     <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
                     {!collapsed && (
@@ -245,10 +340,10 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
         </div>
 
         {/* Mobile User Menu (Bottom) */}
-        <div className="md:hidden border-t border-gray-200 p-2">
+        <div className="md:hidden border-t border-gray-200 dark:border-volus-dark-700 p-2">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition"
+            className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"
           >
             <svg
               className="w-5 h-5"

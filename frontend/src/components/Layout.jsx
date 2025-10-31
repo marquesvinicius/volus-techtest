@@ -45,7 +45,7 @@ const Layout = ({ children }) => {
   const computedMarginLeft = isDesktop ? (sidebarCollapsed ? 80 : 256) : 0;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f5' }}>
+    <div className="min-h-screen bg-gray-100 dark:bg-volus-dark-900 transition-colors duration-300">
       <Header onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
       
       <Sidebar 
@@ -54,13 +54,12 @@ const Layout = ({ children }) => {
         onCollapseChange={handleCollapseChange}
       />
       
-      {/* Main Content */}
       <main 
-        className="pt-24 transition-all duration-300"
-        style={{ marginLeft: computedMarginLeft }}
+        className="pt-24 pb-8 px-4 md:px-8 transition-all duration-300"
+        style={{ marginLeft: `${computedMarginLeft}px` }}
       >
-        <div className="p-6 md:p-8">
-          {children}
+        <div className="mx-auto max-w-7xl">
+            {children}
         </div>
       </main>
     </div>

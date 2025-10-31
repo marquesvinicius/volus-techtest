@@ -13,6 +13,7 @@ router.register(r'products', views.ProductViewSet, basename='product')
 urlpatterns = [
     # Autenticação JWT
     path('api/auth/login/', views.login_api, name='api_login'),
+    path('api/auth/register/', views.register_api, name='api_register'),
     path('api/auth/logout/', views.logout_api, name='api_logout'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/me/', views.UserProfileAPIView.as_view(), name='user_profile'),
