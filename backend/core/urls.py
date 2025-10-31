@@ -1,29 +1,25 @@
 """
-URLs do app core.
+URLs da API REST.
 """
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
+# Router para ViewSets (CRUD automático)
+router = DefaultRouter()
+router.register(r'products', views.ProductViewSet, basename='product')
+
 urlpatterns = [
-    # Autenticação
-    path('login/', views.CustomLoginView.as_view(), name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    # Autenticação JWT
+    path('api/auth/login/', views.login_api, name='api_login'),
+    path('api/auth/logout/', views.logout_api, name='api_logout'),
+    path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/me/', views.UserProfileAPIView.as_view(), name='user_profile'),
     
-    # Dashboard
-    path('', views.dashboard, name='dashboard'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    # Categorias (filtro cascata)
+    path('api/categories/', views.CategoryListAPIView.as_view(), name='api_categories'),
     
-    # Perfil de usuário
-    path('profile/', views.profile_edit, name='profile_edit'),
-    
-    # Configurações
-    path('configuracoes/', views.configuracoes, name='configuracoes'),
-    
-    # Produtos
-    path('products/', views.products_list, name='products_list'),
-    path('products/<int:pk>/', views.product_detail, name='product_detail'),
-    
-    # API JSON
-    path('api/products/', views.api_products, name='api_products'),
-    path('api/categories/', views.api_categories, name='api_categories'),
+    # Produtos (ViewSet com router)
+    path('api/', include(router.urls)),
 ]

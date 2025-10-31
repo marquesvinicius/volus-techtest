@@ -1,235 +1,220 @@
 """
-Views para autenticação, CRUD e API.
+Views da API REST com Django REST Framework.
 """
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView as DjangoLoginView
-from django.contrib import messages
-from django.core.paginator import Paginator
-from django.http import JsonResponse
+from rest_framework import viewsets, status
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.db.models import Q
-from decimal import Decimal
+from collections import Counter
 
 from .models import Product
-from .forms import ProfileForm
+from .serializers import (
+    ProductSerializer,
+    CategoryStructureSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+)
 
 
-class CustomLoginView(DjangoLoginView):
+class ProductViewSet(viewsets.ModelViewSet):
     """
-    View de login customizada.
-    """
-    template_name = 'login.html'
-    redirect_authenticated_user = True
-
-
-def logout_view(request):
-    """
-    View de logout.
-    """
-    logout(request)
-    messages.success(request, 'Logout realizado com sucesso!')
-    return redirect('login')
-
-
-@login_required
-def profile_edit(request):
-    """
-    View para edição de perfil do usuário (demonstra CRUD fora do admin).
-    """
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Perfil atualizado com sucesso!')
-            return redirect('profile_edit')
-    else:
-        form = ProfileForm(instance=request.user)
+    ViewSet para CRUD completo de produtos.
     
-    return render(request, 'profile_edit.html', {'form': form})
-
-
-@login_required
-def dashboard(request):
-    """
-    Dashboard principal com métricas e gráfico.
-    """
-    # Estatísticas gerais
-    total_products = Product.objects.count()
-    total_value = sum(p.price * p.stock for p in Product.objects.all())
-    
-    context = {
-        'total_products': total_products,
-        'total_value': total_value,
-    }
-    
-    return render(request, 'dashboard.html', context)
-
-
-@login_required
-def products_list(request):
-    """
-    Lista paginada de produtos com filtros.
+    Endpoints:
+    - GET /api/products/ - listar produtos (com paginação e filtros)
+    - POST /api/products/ - criar produto
+    - GET /api/products/{id}/ - detalhe de um produto
+    - PUT /api/products/{id}/ - atualizar produto
+    - DELETE /api/products/{id}/ - deletar produto
     
     Filtros suportados:
-    - q: busca por nome/código
-    - category: filtro por categoria
-    - subcategory: filtro por subcategoria
-    - min_price: preço mínimo
-    - max_price: preço máximo
+    - q: busca por nome ou código
+    - category: filtrar por categoria
+    - subcategory: filtrar por subcategoria
+    - ordering: ordenar por campo (ex: -created_at, price)
     """
-    products = Product.objects.all()
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+    search_fields = ['name', 'code']
+    ordering_fields = ['created_at', 'price', 'name', 'stock']
+    ordering = ['-created_at']
     
-    # Filtro de busca por nome
-    q = request.GET.get('q', '').strip()
-    if q:
-        products = products.filter(
-            Q(name__icontains=q) | Q(code__icontains=q)
-        )
+    def get_queryset(self):
+        """
+        Filtros customizados via query params.
+        """
+        queryset = super().get_queryset()
+        
+        # Filtro de busca por nome ou código
+        q = self.request.query_params.get('q', None)
+        if q:
+            queryset = queryset.filter(
+                Q(name__icontains=q) | Q(code__icontains=q)
+            )
+        
+        # Filtro por categoria
+        category = self.request.query_params.get('category', None)
+        if category:
+            queryset = queryset.filter(category=category)
+        
+        # Filtro por subcategoria
+        subcategory = self.request.query_params.get('subcategory', None)
+        if subcategory:
+            queryset = queryset.filter(subcategory=subcategory)
+        
+        return queryset
     
-    # Filtro por categoria
-    category = request.GET.get('category', '').strip()
-    if category:
-        products = products.filter(category=category)
-    
-    # Filtro por subcategoria
-    subcategory = request.GET.get('subcategory', '').strip()
-    if subcategory:
-        products = products.filter(subcategory=subcategory)
-    
-    # Filtro por faixa de preço
-    min_price = request.GET.get('min_price', '').strip()
-    if min_price:
-        try:
-            products = products.filter(price__gte=Decimal(min_price))
-        except:
-            pass
-    
-    max_price = request.GET.get('max_price', '').strip()
-    if max_price:
-        try:
-            products = products.filter(price__lte=Decimal(max_price))
-        except:
-            pass
-    
-    # Paginação (10 itens por página)
-    paginator = Paginator(products, 10)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'page_obj': page_obj,
-        'products': page_obj.object_list,
-        'filters': {
-            'q': q,
-            'category': category,
-            'subcategory': subcategory,
-            'min_price': min_price,
-            'max_price': max_price,
-        },
-        'categories': Product.CATEGORIES,
-    }
-    
-    return render(request, 'products_list.html', context)
-
-
-@login_required
-def product_detail(request, pk):
-    """
-    Detalhe de um produto.
-    """
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'product_detail.html', {'product': product})
-
-
-@login_required
-def api_products(request):
-    """
-    Endpoint JSON para produtos (usado pelo frontend).
-    
-    Suporta os mesmos filtros da listagem:
-    - category: filtro por categoria
-    - subcategory: filtro por subcategoria
-    - q: busca por nome/código
-    """
-    products = Product.objects.all()
-    
-    # Aplicar filtros
-    category = request.GET.get('category', '').strip()
-    if category:
-        products = products.filter(category=category)
-    
-    subcategory = request.GET.get('subcategory', '').strip()
-    if subcategory:
-        products = products.filter(subcategory=subcategory)
-    
-    q = request.GET.get('q', '').strip()
-    if q:
-        products = products.filter(
-            Q(name__icontains=q) | Q(code__icontains=q)
-        )
-    
-    # Serializar para JSON
-    data = {
-        'products': [
+    @action(detail=False, methods=['get'])
+    def by_category(self, request):
+        """
+        Endpoint extra: agregar produtos por categoria.
+        GET /api/products/by_category/
+        """
+        products = self.get_queryset()
+        category_counter = Counter(products.values_list('category', flat=True))
+        
+        data = [
             {
-                'id': p.id,
-                'name': p.name,
-                'code': p.code,
-                'price': str(p.price),
-                'category': p.category,
-                'subcategory': p.subcategory,
-                'stock': p.stock,
-                'created_at': p.created_at.isoformat(),
+                'category': cat,
+                'category_display': dict(Product.CATEGORIES).get(cat, cat),
+                'count': count
             }
-            for p in products
-        ],
-        'count': products.count()
-    }
-    
-    return JsonResponse(data)
-
-
-def api_categories(request):
-    """
-    Endpoint JSON para estrutura de categorias (usado pelo filtro cascata).
-    """
-    # Obter categorias únicas
-    categories = Product.objects.values_list('category', flat=True).distinct()
-    
-    # Obter subcategorias por categoria
-    category_data = []
-    for cat in categories:
-        subcategories = Product.objects.filter(
-            category=cat
-        ).values_list('subcategory', flat=True).distinct()
+            for cat, count in category_counter.items()
+        ]
         
-        # Obter nomes de produtos por subcategoria
-        subcat_data = []
-        for subcat in subcategories:
-            if subcat:  # Ignorar vazios
-                products = Product.objects.filter(
-                    category=cat,
-                    subcategory=subcat
-                ).values_list('name', flat=True)
-                
-                subcat_data.append({
-                    'name': subcat,
-                    'items': list(products)
-                })
-        
-        category_data.append({
-            'name': cat,
-            'display_name': dict(Product.CATEGORIES).get(cat, cat),
-            'subcategories': subcat_data
-        })
+        return Response(data)
+
+
+class CategoryListAPIView(APIView):
+    """
+    Endpoint para estrutura de categorias (filtro cascata).
     
-    return JsonResponse({'categories': category_data})
+    GET /api/categories/
+    Retorna estrutura hierárquica: Categoria → Subcategorias → Itens
+    """
+    permission_classes = [AllowAny]  # Público para facilitar uso
+    
+    def get(self, request):
+        # Obter categorias únicas
+        categories = Product.objects.values_list('category', flat=True).distinct()
+        
+        # Construir estrutura hierárquica
+        category_data = []
+        for cat in categories:
+            # Obter subcategorias desta categoria
+            subcategories = Product.objects.filter(
+                category=cat
+            ).values_list('subcategory', flat=True).distinct()
+            
+            # Obter produtos por subcategoria
+            subcat_data = []
+            for subcat in subcategories:
+                if subcat:  # Ignorar vazios
+                    products = Product.objects.filter(
+                        category=cat,
+                        subcategory=subcat
+                    ).values_list('name', flat=True)
+                    
+                    subcat_data.append({
+                        'name': subcat,
+                        'items': list(products)
+                    })
+            
+            category_data.append({
+                'name': cat,
+                'display_name': dict(Product.CATEGORIES).get(cat, cat),
+                'subcategories': subcat_data
+            })
+        
+        return Response({'categories': category_data})
 
 
-@login_required
-def configuracoes(request):
+class UserProfileAPIView(APIView):
     """
-    Página de configurações com toggle do Modo MALUQUICE.
+    Endpoint para gerenciar perfil do usuário autenticado.
+    
+    GET /api/auth/me/ - retorna dados do usuário
+    PUT /api/auth/me/ - atualiza perfil
     """
-    return render(request, 'configuracoes.html')
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
+    def put(self, request):
+        serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            # Retornar dados completos do usuário
+            user_serializer = UserSerializer(request.user)
+            return Response(user_serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_api(request):
+    """
+    Endpoint de login que retorna JWT tokens.
+    
+    POST /api/auth/login/
+    Body: { "username": "...", "password": "..." }
+    Response: { "access": "...", "refresh": "...", "user": {...} }
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    if not username or not password:
+        return Response(
+            {'error': 'Username e password são obrigatórios'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    user = authenticate(username=username, password=password)
+    
+    if user is None:
+        return Response(
+            {'error': 'Credenciais inválidas'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # Gerar tokens JWT
+    refresh = RefreshToken.for_user(user)
+    
+    # Retornar tokens + dados do usuário
+    user_serializer = UserSerializer(user)
+    
+    return Response({
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'user': user_serializer.data
+    })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_api(request):
+    """
+    Endpoint de logout (invalida refresh token).
+    
+    POST /api/auth/logout/
+    Body: { "refresh": "..." }
+    """
+    try:
+        refresh_token = request.data.get('refresh')
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        return Response({'message': 'Logout realizado com sucesso'})
+    except Exception:
+        return Response(
+            {'error': 'Token inválido'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
