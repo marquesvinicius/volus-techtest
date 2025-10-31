@@ -34,25 +34,25 @@ const ProfilePage = () => {
       setLoading(false);
     } else {
       // Se não houver usuário no contexto, busca na API (fallback)
-      const fetchUser = async () => {
-        try {
-          const currentUser = await authService.fetchCurrentUser();
+    const fetchUser = async () => {
+      try {
+        const currentUser = await authService.fetchCurrentUser();
           setAuthUser(currentUser); // Atualiza o contexto
-          setFormData({
-            username: currentUser.username || '',
-            first_name: currentUser.first_name || '',
-            last_name: currentUser.last_name || '',
-            email: currentUser.email || '',
-            phone: currentUser.phone ? applyPhoneMask(currentUser.phone) : '',
-          });
-        } catch (error) {
-          toast.error("Erro ao buscar dados do usuário.");
-          console.error("Erro ao buscar dados do usuário:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUser();
+        setFormData({
+          username: currentUser.username || '',
+          first_name: currentUser.first_name || '',
+          last_name: currentUser.last_name || '',
+          email: currentUser.email || '',
+          phone: currentUser.phone ? applyPhoneMask(currentUser.phone) : '',
+        });
+      } catch (error) {
+        toast.error("Erro ao buscar dados do usuário.");
+        console.error("Erro ao buscar dados do usuário:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
     }
   }, [user, setAuthUser]);
   

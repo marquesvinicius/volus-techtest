@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
         style={{ marginLeft: `${computedMarginLeft}px` }}
       >
         <div className="mx-auto max-w-7xl">
-            {children}
+          {children}
         </div>
       </main>
     </div>

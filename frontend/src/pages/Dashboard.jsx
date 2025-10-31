@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import MetricCard from '../components/MetricCard';
 import DonutChart from '../components/DonutChart';
+import ProductStockChart from '../components/charts/ProductStockChart';
 import productService from '../services/productService';
 
 // Ícones SVG (sem dependências externas)
@@ -183,10 +184,15 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
-        <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Atividade recente</h2>
-        <div className="flex items-center justify-center py-10 text-volus-davys-gray dark:text-volus-dark-600">
-          Este módulo será implementado nas próximas etapas.
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Saúde do Estoque</h2>
+            <p className="text-sm text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+              Produtos com menor disponibilidade para reposição rápida
+            </p>
+          </div>
         </div>
+        <ProductStockChart products={products} loading={loading} />
       </div>
     </div>
   );

@@ -137,7 +137,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
       ),
       submenu: [
         // { id: 'produtos-lista', label: 'Catálogo', path: '/produtos' }, // Removido
-        { id: 'produtos-categorias', label: 'Categorias', path: '/produtos/categorias' },
+        { id: 'produtos-categorias', label: 'Busca Avançada', path: '/produtos/busca-avancada' },
         { id: 'produtos-estoque', label: 'Controle de Estoque', path: '/produtos/estoque' },
       ],
     },

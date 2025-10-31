@@ -208,7 +208,7 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
       {/* Nível 1: Categoria */}
       <div className="filter-level">
         <label htmlFor="categorySelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+          crazyMode ? 'text-purple-600 dark:text-purple-300' : 'text-volus-jet dark:text-volus-dark-500'
         }`}>
           {crazyMode ? 'Categoria Mágica' : 'Categoria'}
         </label>
@@ -244,7 +244,7 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
         }`}
       >
         <label htmlFor="subcategorySelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+          crazyMode ? 'text-purple-600 dark:text-purple-300' : 'text-volus-jet dark:text-volus-dark-500'
         }`}>
           {crazyMode ? 'Subcategoria Especial' : 'Subcategoria'}
         </label>
@@ -287,7 +287,7 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
         }`}
       >
         <label htmlFor="itemSelect" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-          crazyMode ? 'text-purple-600' : 'text-volus-jet'
+          crazyMode ? 'text-purple-600 dark:text-purple-300' : 'text-volus-jet dark:text-volus-dark-500'
         }`}>
           {crazyMode ? 'Item Mágico (opcional)' : 'Item (opcional)'}
         </label>
@@ -316,7 +316,7 @@ const FilterCascade = ({ categoriesData, onSelectionChange }) => {
         {/* Dica sobre múltipla seleção */}
         {showLevel3 && (
           <div className={`mt-2 text-xs flex items-center gap-1 ${
-            crazyMode ? 'text-purple-600' : 'text-volus-davys-gray'
+            crazyMode ? 'text-purple-600 dark:text-purple-300' : 'text-volus-davys-gray dark:text-volus-dark-600'
           }`}>
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

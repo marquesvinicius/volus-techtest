@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -9,11 +9,10 @@ import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const defaultColors = ['#1CCF6C', '#22D97A', '#4FE58F', '#7BEDA8', '#1F2B3A'];
+const defaultColors = ['#1CCF6C', '#0EA5E9', '#8B5CF6', '#F59E0B', '#22D97A', '#FB7185'];
 
 const DonutChart = ({ data = [], colors = defaultColors, currency = false, loading = false }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [redistributedData, setRedistributedData] = useState(null);
   const chartRef = useRef(null);
 
   const total = useMemo(
@@ -21,49 +20,66 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
     [data]
   );
 
-  // Função para redistribuir valores no hover
-  const redistributeValues = (hoveredIdx) => {
-    if (hoveredIdx === null || !data.length) return data;
-    
-    const hoveredValue = data[hoveredIdx].value;
-    const otherValues = data.filter((_, idx) => idx !== hoveredIdx);
-    const otherTotal = otherValues.reduce((sum, item) => sum + item.value, 0);
-    
-    // Redistribuir 30% do valor hover para os outros itens proporcionalmente
+  const originalValues = useMemo(() => data.map((item) => item.value), [data]);
+
+  const redistributeValues = useCallback((hoveredIdx) => {
+    if (hoveredIdx === null || !originalValues.length) {
+      return [...originalValues];
+    }
+
+    const hoveredValue = originalValues[hoveredIdx] || 0;
+    const otherTotal = originalValues.reduce((sum, value, index) => index === hoveredIdx ? sum : sum + value, 0);
+
+    if (otherTotal === 0) {
+      return [...originalValues];
+    }
+
     const redistributionAmount = hoveredValue * 0.3;
-    const newHoveredValue = hoveredValue - redistributionAmount;
-    
-    return data.map((item, idx) => {
-      if (idx === hoveredIdx) {
-        return { ...item, value: newHoveredValue };
-      } else {
-        const proportion = item.value / otherTotal;
-        const additionalValue = redistributionAmount * proportion;
-        return { ...item, value: item.value + additionalValue };
+
+    return originalValues.map((value, index) => {
+      if (index === hoveredIdx) {
+        return value - redistributionAmount;
       }
+
+      const proportion = value / otherTotal;
+      return value + redistributionAmount * proportion;
     });
-  };
+  }, [originalValues]);
+
+  const applyRedistribution = useCallback((hoveredIdx) => {
+    const chartInstance = chartRef.current;
+    if (!chartInstance) return;
+
+    const dataset = chartInstance.data.datasets[0];
+    if (!dataset) return;
+
+    dataset.data = redistributeValues(hoveredIdx);
+    chartInstance.update('none');
+  }, [redistributeValues]);
+
+  useEffect(() => {
+    applyRedistribution(null);
+  }, [applyRedistribution, originalValues]);
 
   const chartConfig = useMemo(() => {
     if (!data.length) {
       return null;
     }
 
-    const displayData = redistributedData || data;
-
     return {
       labels: data.map((item) => item.label),
       datasets: [
         {
-          data: displayData.map((item) => item.value),
+          data: originalValues,
           backgroundColor: data.map((_, index) => colors[index % colors.length]),
           hoverBackgroundColor: data.map((_, index) => colors[index % colors.length]),
           borderWidth: 0,
-          hoverOffset: 8,
+          hoverOffset: 12,
+          borderRadius: 6,
         },
       ],
     };
-  }, [data, colors, redistributedData]);
+  }, [data, colors, originalValues]);
 
   const formattedLegend = useMemo(() => {
     if (!data.length) return [];
@@ -99,19 +115,19 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
       padding: 20,
     },
     animation: {
-      duration: 300,
-      easing: 'easeInOutQuart',
+      duration: 0, // Desativa animações do Chart.js para evitar conflitos
     },
     onHover: (event, elements) => {
+      const chartInstance = chartRef.current;
+      if (!chartInstance) return;
+
       if (elements.length > 0) {
         const hoveredIdx = elements[0].index;
         if (hoveredIdx !== hoveredIndex) {
           setHoveredIndex(hoveredIdx);
-          setRedistributedData(redistributeValues(hoveredIdx));
         }
-      } else {
+      } else if (hoveredIndex !== null) {
         setHoveredIndex(null);
-        setRedistributedData(null);
       }
     },
     plugins: {
@@ -170,7 +186,7 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
             
             // Adicionar informação sobre posição no ranking
             const sortedData = [...data].sort((a, b) => b.value - a.value);
-            const position = sortedData.findIndex(item => item.value === originalValue) + 1;
+            const position = sortedData.findIndex(item => item.label === context.label) + 1;
             lines.push(`Posição no ranking: ${position}º lugar`);
             
             return lines;
@@ -192,9 +208,9 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
         <Doughnut ref={chartRef} data={chartConfig} options={options} />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
         {formattedLegend.map((item, index) => (
-          <div key={index} className="flex items-center gap-2 text-sm text-volus-davys-gray">
+          <div key={index} className="flex items-center gap-2 text-sm text-volus-davys-gray dark:text-volus-dark-600">
             <span
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: item.color }}
@@ -203,6 +219,10 @@ const DonutChart = ({ data = [], colors = defaultColors, currency = false, loadi
           </div>
         ))}
       </div>
+
+      <p className="text-center text-xs text-volus-davys-gray/80 dark:text-volus-dark-600/80 mt-4">
+        Passe seu mouse sobre os itens para ver mais detalhes.
+      </p>
     </div>
   );
 };

@@ -116,12 +116,74 @@ const ReportsPage = () => {
         label: 'Produtos por Faixa de Preço',
         data: reportData.priceRanges.data,
         fill: true,
-        backgroundColor: 'rgba(28, 204, 103, 0.2)',
-        borderColor: 'rgba(28, 204, 103, 1)',
-        tension: 0.4,
+        backgroundColor: 'rgba(28, 204, 103, 0.18)',
+        borderColor: '#1CCF6C',
+        pointBackgroundColor: '#1CCF6C',
+        pointBorderColor: '#0F172A',
+        pointHoverRadius: 6,
+        tension: 0.38,
       },
     ],
   };
+
+  const totalPriceRangeItems = useMemo(() => (
+    reportData.priceRanges.data.reduce((sum, value) => sum + value, 0)
+  ), [reportData.priceRanges]);
+
+  const lineOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: {
+          color: isDarkMode ? '#C9D1D9' : '#333333',
+        }
+      },
+      tooltip: {
+        backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.92)' : 'rgba(17, 24, 39, 0.88)',
+        borderColor: '#1CCF6C',
+        borderWidth: 1.5,
+        padding: 14,
+        titleFont: {
+          family: 'Roboto, sans-serif',
+          size: 14,
+          weight: '600',
+        },
+        bodyFont: {
+          family: 'Roboto, sans-serif',
+          size: 13,
+        },
+        callbacks: {
+          title: (context) => context.length ? `Faixa de preço: ${context[0].label}` : '',
+          label: (context) => `Produtos: ${context.parsed.y}`,
+          afterLabel: (context) => {
+            const value = context.parsed.y;
+            if (!totalPriceRangeItems) return [];
+            const perc = ((value / totalPriceRangeItems) * 100).toFixed(1);
+            return [`Participação: ${perc}% do catálogo`];
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: isDarkMode ? '#8B949E' : '#5e5e5e',
+        },
+        grid: {
+          color: isDarkMode ? 'rgba(139, 148, 158, 0.18)' : 'rgba(0, 0, 0, 0.08)',
+        }
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? '#8B949E' : '#5e5e5e',
+        },
+        grid: {
+          color: isDarkMode ? 'rgba(139, 148, 158, 0.18)' : 'rgba(0, 0, 0, 0.08)',
+        }
+      }
+    }
+  }), [isDarkMode, totalPriceRangeItems, reportData.priceRanges]);
 
   const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
@@ -170,36 +232,11 @@ const ReportsPage = () => {
       <div className="bg-white dark:bg-volus-dark-800 p-6 rounded-2xl shadow-card dark:border dark:border-volus-dark-700">
         <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Distribuição por Faixa de Preço</h2>
         <div className="h-64">
-          <Line data={lineChartData} options={{ 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: {
-                  color: isDarkMode ? '#C9D1D9' : '#333333',
-                }
-              }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  color: isDarkMode ? '#8B949E' : '#5e5e5e',
-                },
-                grid: {
-                  color: isDarkMode ? 'rgba(139, 148, 158, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-                }
-              },
-              y: {
-                ticks: {
-                  color: isDarkMode ? '#8B949E' : '#5e5e5e',
-                },
-                grid: {
-                  color: isDarkMode ? 'rgba(139, 148, 158, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-                }
-              }
-            }
-          }} />
+          <Line data={lineChartData} options={lineOptions} />
         </div>
+        <p className="text-center text-xs text-volus-davys-gray/80 dark:text-volus-dark-600/80 mt-2">
+          Passe seu mouse sobre os itens para ver mais detalhes.
+        </p>
       </div>
 
       {/* Tabela de Categorias */}

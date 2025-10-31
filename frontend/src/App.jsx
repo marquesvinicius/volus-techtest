@@ -16,8 +16,8 @@ import ProfilePage from './pages/ProfilePage';
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
+    <AuthProvider>
+      <Router>
         <Routes>
           {/* Rotas Públicas */}
           <Route path="/login" element={<Login />} />
@@ -47,7 +47,7 @@ function App() {
           />
           
           <Route
-            path="/produtos/categorias"
+            path="/produtos/busca-avancada"
             element={
               <PrivateRoute>
                 <Layout>
@@ -104,8 +104,8 @@ function App() {
           {/* Redirect para login se rota não encontrada */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        </Router>
-      </AuthProvider>
+      </Router>
+    </AuthProvider>
     </ThemeProvider>
   );
 }
