@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
 from collections import Counter
 
@@ -18,6 +19,7 @@ from .serializers import (
     CategoryStructureSerializer,
     UserSerializer,
     UserUpdateSerializer,
+    ChangePasswordSerializer,
 )
 
 
@@ -218,3 +220,49 @@ def logout_api(request):
             {'error': 'Token inválido'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class ChangePasswordAPIView(APIView):
+    """
+    Endpoint para alterar a senha do usuário autenticado.
+    
+    POST /api/auth/change-password/
+    Body: {
+        "old_password": "...",
+        "new_password": "...",
+        "new_password_confirm": "..."
+    }
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = request.user
+        old_password = serializer.validated_data['old_password']
+        new_password = serializer.validated_data['new_password']
+        
+        # Verificar se a senha antiga está correta
+        if not user.check_password(old_password):
+            return Response(
+                {'old_password': 'Senha atual incorreta.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validar a nova senha (complexidade)
+        try:
+            validate_password(new_password, user)
+        except Exception as e:
+            return Response(
+                {'new_password': list(e.messages)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Alterar a senha
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({'message': 'Senha alterada com sucesso.'}, status=status.HTTP_200_OK)

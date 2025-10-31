@@ -95,3 +95,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'email']
 
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer para alteração de senha.
+    """
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True, min_length=8)
+    new_password_confirm = serializers.CharField(required=True, write_only=True)
+    
+    def validate(self, attrs):
+        """
+        Valida se as novas senhas coincidem.
+        """
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError({
+                'new_password_confirm': 'As senhas não coincidem.'
+            })
+        return attrs

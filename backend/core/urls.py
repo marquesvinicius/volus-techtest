@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/auth/logout/', views.logout_api, name='api_logout'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/me/', views.UserProfileAPIView.as_view(), name='user_profile'),
+    path('api/auth/change-password/', views.ChangePasswordAPIView.as_view(), name='change_password'),
     
     # Categorias (filtro cascata)
     path('api/categories/', views.CategoryListAPIView.as_view(), name='api_categories'),

@@ -108,7 +108,24 @@ const ProfilePage = () => {
       toast.success('Senha alterada com sucesso!');
       setPasswordData({ old_password: '', new_password: '', new_password_confirm: '' });
     } catch (error) {
-      toast.error(error.detail || 'Erro ao alterar a senha.');
+      // Tratar erros do backend
+      let errorMessage = 'Erro ao alterar a senha.';
+      
+      if (error.old_password) {
+        errorMessage = error.old_password;
+      } else if (error.new_password) {
+        errorMessage = Array.isArray(error.new_password) 
+          ? error.new_password.join('. ') 
+          : error.new_password;
+      } else if (error.new_password_confirm) {
+        errorMessage = error.new_password_confirm;
+      } else if (error.detail) {
+        errorMessage = error.detail;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      toast.error(errorMessage);
       console.error("Erro ao alterar senha:", error);
     }
   };
