@@ -49,97 +49,97 @@ function App() {
 
   return (
     <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
         {crazyMode && <div className="crazy-mode-background"></div>}
-        <Router>
-          <Routes>
-            {/* Rotas Públicas */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Rotas Privadas */}
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-            <Route
-              path="/produtos"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <ProductList />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-            <Route
-              path="/produtos/busca-avancada"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <CategoriesPage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-            <Route
-              path="/produtos/estoque"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <StockControlPage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-            <Route
-              path="/perfil" // Adicionar a nova rota
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <ProfilePage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-                <Route
-                  path="/relatorios"
-                  element={
-                    <PrivateRoute>
-                      <Layout>
-                        <ReportsPage />
-                      </Layout>
-                    </PrivateRoute>
-                  }
-                />
-            
-            <Route
-              path="/configuracoes"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <Settings />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            
-            {/* Redirect para login se rota não encontrada */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          {/* Rotas Públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          {/* Rotas Privadas */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+          <Route
+            path="/produtos"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <ProductList />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+          <Route
+            path="/produtos/busca-avancada"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <CategoriesPage />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+          <Route
+            path="/produtos/estoque"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <StockControlPage />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+          <Route
+            path="/perfil" // Adicionar a nova rota
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <ProfilePage />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+              <Route
+                path="/relatorios"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <ReportsPage />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+          
+          <Route
+            path="/configuracoes"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <Settings />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          
+          {/* Redirect para login se rota não encontrada */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
     </ThemeProvider>
   );
 }

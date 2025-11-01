@@ -3,7 +3,7 @@ import productService from '../services/productService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProductForm from '../components/products/ProductForm'; // Importar o formulário
-import { validateCodeChecksum } from '../utils/validation';
+import { validateCodeChecksum, isCrazyModeEnabled } from '../utils/validation';
 
 
 const ProductList = () => {
@@ -25,6 +25,11 @@ const ProductList = () => {
     stock: '',
   });
   const [codeError, setCodeError] = useState('');
+  const [crazyMode, setCrazyMode] = useState(false);
+
+  useEffect(() => {
+    setCrazyMode(isCrazyModeEnabled());
+  }, []);
 
 
   // Fetch products from API
@@ -229,8 +234,10 @@ const ProductList = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Catálogo de Produtos</h1>
-            <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Gerenciamento completo de produtos com filtros avançados</p>
+            <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Catálogo de Produtos</h1>
+            <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+              {crazyMode ? "Tesouros à espera de serem descobertos." : "Gerenciamento completo de produtos com filtros avançados"}
+            </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -239,7 +246,7 @@ const ProductList = () => {
             Adicionar Produto
           </button>
         </div>
-        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 space-y-4">
+        <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 space-y-4 ${crazyMode ? 'pulsating-card' : ''}`}>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Filtros</h2>
             <button
@@ -315,7 +322,7 @@ const ProductList = () => {
         </div>
 
         {/* Products Table */}
-        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden">
+        <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden ${crazyMode ? 'pulsating-card' : ''}`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-volus-dark-900 border-b border-gray-200 dark:border-volus-dark-700">

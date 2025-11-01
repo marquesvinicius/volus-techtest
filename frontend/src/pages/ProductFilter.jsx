@@ -30,7 +30,10 @@ const ProductFilter = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [easterEggCount, setEasterEggCount] = useState(0);
 
-  const crazyMode = isCrazyModeEnabled();
+  const [crazyMode, setCrazyMode] = useState(false);
+  useEffect(() => {
+    setCrazyMode(isCrazyModeEnabled());
+  }, []);
 
   // Debounce para busca em tempo real
   const searchTimeout = useRef(null);
@@ -244,14 +247,14 @@ const ProductFilter = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Busca Avançada de Produtos</h1>
+        <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Busca Avançada de Produtos</h1>
         <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
-          Filtre produtos por categoria, subcategoria e item com busca em tempo real
+          {crazyMode ? "Onde a caça ao tesouro digital começa!" : "Filtre produtos por categoria, subcategoria e item com busca em tempo real"}
         </p>
       </div>
 
       {/* Busca em Tempo Real */}
-      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+      <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 ${crazyMode ? 'pulsating-card' : ''}`}>
         <label htmlFor="searchInput" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-2">
           Buscar produtos
         </label>
@@ -280,7 +283,7 @@ const ProductFilter = () => {
       </div>
 
       {/* Filtros em Cascata */}
-      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+      <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 ${crazyMode ? 'pulsating-card' : ''}`}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Filtros em Cascata</h2>
           <button
@@ -315,7 +318,7 @@ const ProductFilter = () => {
       )}
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+      <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 ${crazyMode ? 'pulsating-card' : ''}`}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500">Resultados da Busca</h2>
           <span className="text-sm text-volus-davys-gray dark:text-volus-dark-600">

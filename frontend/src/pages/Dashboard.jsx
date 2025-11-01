@@ -3,6 +3,7 @@ import MetricCard from '../components/MetricCard';
 import DonutChart from '../components/DonutChart';
 import ProductStockChart from '../components/charts/ProductStockChart';
 import productService from '../services/productService';
+import { isCrazyModeEnabled } from '../utils/validation';
 
 // Ícones SVG (sem dependências externas)
 const Icons = {
@@ -44,6 +45,17 @@ const formatCurrency = (value) =>
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [crazyMode, setCrazyMode] = useState(false);
+  const [droppedCards, setDroppedCards] = useState([]);
+
+  useEffect(() => {
+    const isCrazy = isCrazyModeEnabled();
+    setCrazyMode(isCrazy);
+    // Resetar cards se o modo maluquice for desativado e reativado
+    if (isCrazy) {
+        setDroppedCards([]);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -73,6 +85,12 @@ const Dashboard = () => {
 
     fetchProducts();
   }, []);
+
+  const handleCardDrop = (cardId) => {
+    if (crazyMode && !droppedCards.includes(cardId)) {
+      setDroppedCards(prev => [...prev, cardId]);
+    }
+  };
 
   const chartData = useMemo(() => {
     if (!products.length) {
@@ -128,12 +146,14 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Dashboard</h1>
-        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Visão geral do desempenho comercial</p>
+        <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Dashboard</h1>
+        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+            {crazyMode ? "A dimensão onde os números dançam!" : "Visão geral do desempenho comercial"}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-8">
-        <div className="bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+        <div className={`bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 ${crazyMode ? 'pulsating-card' : ''}`}>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Vendas por Categoria</h2>
@@ -144,13 +164,23 @@ const Dashboard = () => {
           <DonutChart data={chartData} currency loading={loading} />
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
+          {droppedCards.length === 4 && crazyMode && (
+                <div className="absolute inset-0 bg-volus-dark-900/80 rounded-2xl flex items-center justify-center z-10 animate-pulse">
+                    <p className="text-2xl font-bold text-center text-white p-4 crazy-text-shadow">
+                        Você deu um drop no nosso banco de dados =(
+                    </p>
+                </div>
+            )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
           <MetricCard
             title="Valor Total em Estoque"
             value={formatCurrency(metrics.totalStockValue)}
             icon={Icons.DollarSign}
             accentColor="#1CCF6C"
+            crazyMode={crazyMode}
+            isDropped={droppedCards.includes(1)}
+            onClick={() => handleCardDrop(1)}
           />
 
           <MetricCard
@@ -158,6 +188,9 @@ const Dashboard = () => {
             value={metrics.totalItemsInStock.toLocaleString('pt-BR')}
             icon={Icons.ShoppingCart}
             accentColor="#0EA5E9"
+            crazyMode={crazyMode}
+            isDropped={droppedCards.includes(2)}
+            onClick={() => handleCardDrop(2)}
           />
 
           <MetricCard
@@ -165,6 +198,9 @@ const Dashboard = () => {
             value={metrics.skuCount.toLocaleString('pt-BR')}
             icon={Icons.Users}
             accentColor="#F59E0B"
+            crazyMode={crazyMode}
+            isDropped={droppedCards.includes(3)}
+            onClick={() => handleCardDrop(3)}
           />
 
           <MetricCard
@@ -172,12 +208,15 @@ const Dashboard = () => {
             value={formatCurrency(metrics.averageItemPrice)}
             icon={Icons.Activity}
             accentColor="#8B5CF6"
+            crazyMode={crazyMode}
+            isDropped={droppedCards.includes(4)}
+            onClick={() => handleCardDrop(4)}
           />
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6">
+      <div className={`bg-white dark:bg-volus-dark-800 rounded-3xl shadow-card border border-white/60 dark:border-volus-dark-700 p-6 ${crazyMode ? 'pulsating-card' : ''}`}>
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
             <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Saúde do Estoque</h2>

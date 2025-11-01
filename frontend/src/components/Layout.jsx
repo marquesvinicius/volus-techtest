@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { isCrazyModeEnabled } from '../utils/validation';
 
 const getInitialCollapsed = () => {
   if (typeof window === 'undefined') {
@@ -20,6 +21,11 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(getInitialCollapsed);
   const [isDesktop, setIsDesktop] = useState(getInitialDesktop);
+  const [crazyMode, setCrazyMode] = useState(false);
+
+  useEffect(() => {
+    setCrazyMode(isCrazyModeEnabled());
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,8 +50,18 @@ const Layout = ({ children }) => {
 
   const computedMarginLeft = isDesktop ? (sidebarCollapsed ? 80 : 256) : 0;
 
+  const floatingIcons = () => (
+    <>
+        <div className="floating-icon icon-1">❖</div>
+        <div className="floating-icon icon-2">✦</div>
+        <div className="floating-icon icon-3">⌬</div>
+        <div className="floating-icon icon-4">✨</div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-volus-dark-900 transition-colors duration-300">
+      {crazyMode && floatingIcons()}
       <Header onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
       
       <Sidebar 

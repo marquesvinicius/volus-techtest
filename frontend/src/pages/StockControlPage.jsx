@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import productService from '../services/productService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { isCrazyModeEnabled } from '../utils/validation';
 
 const StockControlPage = () => {
   const [products, setProducts] = useState([]);
@@ -9,6 +10,11 @@ const StockControlPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingValue, setEditingValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const [crazyMode, setCrazyMode] = useState(false);
+
+  useEffect(() => {
+    setCrazyMode(isCrazyModeEnabled());
+  }, []);
 
   // Carrega os produtos da API
   const fetchProducts = async () => {
@@ -81,12 +87,14 @@ const StockControlPage = () => {
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} />
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Controle de Estoque</h1>
-          <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Monitoramento e gerenciamento de quantidades em tempo real</p>
+          <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Controle de Estoque</h1>
+          <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+            {crazyMode ? "Onde cada número conta... ou não!" : "Monitoramento e gerenciamento de quantidades em tempo real"}
+          </p>
         </div>
 
         {/* Stock Table */}
-        <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden">
+        <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 overflow-hidden ${crazyMode ? 'pulsating-card' : ''}`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-volus-dark-900 border-b border-gray-200 dark:border-volus-dark-700">

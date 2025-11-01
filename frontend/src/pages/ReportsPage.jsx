@@ -3,6 +3,7 @@ import productService from '../services/productService';
 import MetricCard from '../components/MetricCard'; // Importar o MetricCard
 import { Line } from 'react-chartjs-2';
 import { useTheme } from '../context/ThemeContext';
+import { isCrazyModeEnabled } from '../utils/validation';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -39,8 +40,10 @@ const ReportsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useTheme();
+  const [crazyMode, setCrazyMode] = useState(false);
 
   useEffect(() => {
+    setCrazyMode(isCrazyModeEnabled());
     const fetchData = async () => {
       try {
         const response = await productService.getProducts({ page_size: 500 });
@@ -204,8 +207,10 @@ const ReportsPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Relatórios</h1>
-        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Análise detalhada e insights do seu inventário.</p>
+        <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Relatórios</h1>
+        <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+          {crazyMode ? "Decifrando os segredos dos seus produtos." : "Análise detalhada e insights do seu inventário."}
+        </p>
       </div>
 
       {/* Cards de Métricas */}
@@ -216,6 +221,7 @@ const ReportsPage = () => {
           subtitle={reportData.mostExpensiveProduct ? reportData.mostExpensiveProduct.name : ''}
           icon={Icons.DollarSign}
           accentColor="#1CCF6C"
+          crazyMode={crazyMode}
         />
         <MetricCard
           title="Produto Mais Barato"
@@ -223,6 +229,7 @@ const ReportsPage = () => {
           subtitle={reportData.cheapestProduct ? reportData.cheapestProduct.name : ''}
           icon={Icons.BarChart}
           accentColor="#0EA5E9"
+          crazyMode={crazyMode}
         />
         <MetricCard
           title="Produto com Maior Estoque"
@@ -230,6 +237,7 @@ const ReportsPage = () => {
           subtitle={reportData.highestStockProduct ? reportData.highestStockProduct.name : ''}
           icon={Icons.Package}
           accentColor="#F59E0B"
+          crazyMode={crazyMode}
         />
         <MetricCard
           title="Produto com Menor Estoque"
@@ -237,11 +245,12 @@ const ReportsPage = () => {
           subtitle={reportData.lowestStockProduct ? reportData.lowestStockProduct.name : ''}
           icon={Icons.PieChart}
           accentColor="#8B5CF6"
+          crazyMode={crazyMode}
         />
       </div>
 
       {/* Gráfico de Linha */}
-      <div className="bg-white dark:bg-volus-dark-800 p-6 rounded-2xl shadow-card dark:border dark:border-volus-dark-700">
+      <div className={`bg-white dark:bg-volus-dark-800 p-6 rounded-2xl shadow-card dark:border dark:border-volus-dark-700 ${crazyMode ? 'pulsating-card' : ''}`}>
         <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Distribuição por Faixa de Preço</h2>
         <div className="h-64">
           <Line data={lineChartData} options={lineOptions} />
@@ -252,7 +261,7 @@ const ReportsPage = () => {
       </div>
 
       {/* Tabela de Categorias */}
-      <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card overflow-hidden dark:border dark:border-volus-dark-700">
+      <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card overflow-hidden dark:border dark:border-volus-dark-700 ${crazyMode ? 'pulsating-card' : ''}`}>
         <div className="p-6 border-b dark:border-volus-dark-700">
           <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Distribuição por Categoria</h2>
         </div>

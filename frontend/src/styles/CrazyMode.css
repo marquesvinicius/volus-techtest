@@ -1,17 +1,56 @@
 /* frontend/src/styles/CrazyMode.css */
 
 .crazy-mode-background {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f00, #ff0, #0f0, #0ff, #00f, #f0f);
+  background-size: 600% 600%;
+  animation: gradient 10s ease infinite;
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  opacity: 0.3;
+  opacity: 0.5;
 }
+
+/* Efeito de partículas flutuantes */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+  100% { transform: translateY(0px) rotate(360deg); opacity: 1; }
+}
+
+.crazy-mode::before, .crazy-mode::after {
+  content: '✦';
+  position: fixed;
+  font-size: 2rem;
+  color: #ffab00;
+  animation: float 10s infinite ease-in-out;
+  z-index: -1;
+  opacity: 0;
+}
+
+.crazy-mode::after {
+  content: '✨';
+  font-size: 3rem;
+  left: 80%;
+  top: 20%;
+  animation-delay: -5s;
+  color: #23d5ab;
+}
+
+.crazy-mode .floating-icon {
+    position: fixed;
+    z-index: -1;
+    opacity: 0.25;
+    animation: float 15s infinite ease-in-out;
+}
+
+.crazy-mode .icon-1 { font-size: 5rem; top: 15%; left: 10%; animation-delay: -2s; color: #ff4d4d; }
+.crazy-mode .icon-2 { font-size: 8rem; top: 70%; left: 85%; animation-delay: -8s; color: #ffa500; }
+.crazy-mode .icon-3 { font-size: 6rem; top: 80%; left: 10%; animation-delay: -5s; color: #4dff4d; }
+.crazy-mode .icon-4 { font-size: 4rem; top: 20%; left: 80%; animation-delay: -12s; color: #4d4dff; }
+
 
 @keyframes gradient {
   0% {
@@ -25,6 +64,48 @@
   }
 }
 
+/* Efeito Neon para o menu */
+.crazy-mode .sidebar-neon-text {
+    animation: rainbow-text 4s linear infinite;
+}
+
+.crazy-mode .sidebar-neon-icon {
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+    animation: rainbow-glow 4s linear infinite;
+}
+
+/* Animação especial para o Jogo da Cobrinha */
+.crazy-mode .snake-game-special {
+    animation: crazy-party 1.5s linear infinite;
+    border: 1px solid transparent;
+}
+
+@keyframes rainbow-text {
+    0%,100% { color: #ff4d4d; }
+    16% { color: #ffa500; }
+    32% { color: #ffff4d; }
+    48% { color: #4dff4d; }
+    64% { color: #4dffff; }
+    80% { color: #4d4dff; }
+}
+
+@keyframes rainbow-glow {
+    0%,100% { filter: drop-shadow(0 0 4px #ff4d4d); }
+    16% { filter: drop-shadow(0 0 4px #ffa500); }
+    32% { filter: drop-shadow(0 0 4px #ffff4d); }
+    48% { filter: drop-shadow(0 0 4px #4dff4d); }
+    64% { filter: drop-shadow(0 0 4px #4dffff); }
+    80% { filter: drop-shadow(0 0 4px #4d4dff); }
+}
+
+@keyframes crazy-party {
+    0% { transform: scale(1); box-shadow: 0 0 5px #ff4d4d; }
+    25% { transform: scale(1.05) rotate(2deg); box-shadow: 0 0 10px #4dff4d; }
+    50% { transform: scale(1); box-shadow: 0 0 5px #4d4dff; }
+    75% { transform: scale(1.05) rotate(-2deg); box-shadow: 0 0 10px #ffa500; }
+    100% { transform: scale(1); box-shadow: 0 0 5px #ff4d4d; }
+}
+
 .crazy-mode .crazy-text-shadow {
     text-shadow: 
         0 0 5px #fff,
@@ -35,6 +116,24 @@
         0 0 30px #0073e6,
         0 0 35px #0073e6;
     animation: crazy-text-flicker 2s infinite alternate;
+}
+
+/* Efeito de pulsação para cards */
+.crazy-mode .pulsating-card {
+    animation: pulsating-border 4s infinite;
+    box-shadow: 0 0 0 0 rgba(35, 213, 171, 0.7);
+}
+
+@keyframes pulsating-border {
+    0% {
+        box-shadow: 0 0 0 0 rgba(35, 213, 171, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 15px 10px rgba(35, 213, 171, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(35, 213, 171, 0);
+    }
 }
 
 @keyframes crazy-text-flicker {

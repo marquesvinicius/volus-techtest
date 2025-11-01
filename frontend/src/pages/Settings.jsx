@@ -10,6 +10,7 @@ const Settings = () => {
     const newValue = !crazyMode;
     setCrazyMode(newValue);
     localStorage.setItem('crazyMode', newValue.toString());
+    window.dispatchEvent(new Event('storage'));
   };
   
   return (
@@ -51,21 +52,37 @@ const Settings = () => {
             </button>
           </div>
           {crazyMode && (
-            <div className="bg-yellow-50 dark:bg-yellow-500/10 border-l-4 border-yellow-400 p-4 rounded-r-lg animate-pulse">
-              <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                  <line x1="12" y1="9" x2="12" y2="13"></line>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">Modo MALUQUICE ativado!</p>
-                  <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
-                    O sistema agora contém easter eggs, animações especiais e comportamentos não convencionais. Explore e divirta-se!
-                  </p>
+            <>
+              <div className="bg-yellow-50 dark:bg-yellow-500/10 border-l-4 border-yellow-400 p-4 rounded-r-lg animate-pulse">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  <div>
+                    <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">Modo MALUQUICE ativado!</p>
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
+                      O sistema agora contém easter eggs, animações especiais e comportamentos não convencionais. Explore e divirta-se!
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+              <div className="mt-4 bg-red-50 dark:bg-red-500/10 border-l-4 border-red-400 p-4 rounded-r-lg">
+                  <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                          <path d="m9 12 2 2 4-4"></path>
+                      </svg>
+                      <div>
+                          <p className="text-sm font-semibold text-red-800 dark:text-red-300">Aviso de Performance</p>
+                          <p className="text-xs text-red-700 dark:text-red-400 mt-1">
+                              Este modo dá uma queda na performance devido à quantidade de efeitos. Se quiser uma experiência mais suave, desative-o.
+                          </p>
+                      </div>
+                  </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -117,15 +134,21 @@ const Settings = () => {
         <h3 className="text-lg font-semibold text-volus-jet dark:text-volus-dark-500 mb-4">Sobre o Sistema</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-gray-50 dark:bg-volus-dark-900 rounded-lg">
-            <div className="text-2xl font-bold text-volus-emerald">v1.0.0</div>
+            <div className={`text-2xl font-bold ${crazyMode ? 'sidebar-neon-text' : 'text-volus-emerald'}`}>
+              {crazyMode ? 'mais de 8000' : 'v1.0.0'}
+            </div>
             <div className="text-xs text-gray-600 dark:text-volus-dark-600 mt-1">Versão</div>
           </div>
           <div className="text-center p-4 bg-gray-50 dark:bg-volus-dark-900 rounded-lg">
-            <div className="text-2xl font-bold text-volus-emerald">React</div>
+            <div className={`text-2xl font-bold ${crazyMode ? 'sidebar-neon-text' : 'text-volus-emerald'}`}>
+              {crazyMode ? 'COBOL' : 'React'}
+            </div>
             <div className="text-xs text-gray-600 dark:text-volus-dark-600 mt-1">Framework</div>
           </div>
           <div className="text-center p-4 bg-gray-50 dark:bg-volus-dark-900 rounded-lg">
-            <div className="text-2xl font-bold text-volus-emerald">Django</div>
+            <div className={`text-2xl font-bold ${crazyMode ? 'sidebar-neon-text' : 'text-volus-emerald'}`}>
+              {crazyMode ? 'Assembly' : 'Django'}
+            </div>
             <div className="text-xs text-gray-600 dark:text-volus-dark-600 mt-1">Backend</div>
           </div>
         </div>

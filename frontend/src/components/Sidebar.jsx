@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isCrazyModeEnabled } from '../utils/validation';
 import SnakeGame from './SnakeGame'; // Importe o jogo
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -85,6 +87,9 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
 
     // Comportamentos especiais do Modo MALUQUICE
     if (crazyModeActive) {
+      if (item.id === 'snake-game') {
+        baseClasses += ' snake-game-special';
+      }
       const clickCount = menuItemClicks[item.id] || 0;
       
       if (clickCount > 0) {
@@ -192,7 +197,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="hover:animate-spin"
+          className={`hover:animate-spin ${crazyModeActive ? 'sidebar-neon-icon' : ''}`}
         >
           <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
           <path d="M15.5 8.5c-.828 0-1.5-.672-1.5-1.5s.672-1.5 1.5-1.5 1.5.672 1.5 1.5-.672 1.5-1.5 1.5z" />
@@ -219,11 +224,16 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
   };
 
   const handleLogout = async () => {
+    if (crazyModeActive) {
+      toast.warn("Você só pode sair quando a festa acabar");
+      return;
+    }
     await logout();
   };
 
   return (
     <>
+      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} />
       {/* Overlay Mobile */}
       {isOpen && (
         <div
@@ -304,7 +314,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                       <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
                       {!collapsed && (
                         <>
-                          <span className="flex-1 text-left text-base md:text-sm font-medium">
+                          <span className={`flex-1 text-left text-base md:text-sm font-medium ${crazyModeActive && item.id !== 'snake-game' ? 'sidebar-neon-text' : ''}`}>
                             {item.label}
                           </span>
                           <svg
@@ -336,7 +346,9 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                               } py-2.5 md:py-2 text-base md:text-sm`}
                               onClick={onClose}
                             >
-                              {subitem.label}
+                              <span className={crazyModeActive ? 'sidebar-neon-text' : ''}>
+                                {subitem.label}
+                              </span>
                             </Link>
                           </li>
                         ))}
@@ -360,7 +372,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                   >
                     <span className={`flex-shrink-0 ${collapsed ? 'w-5 h-5' : 'w-6 h-6 md:w-5 md:h-5'}`}>{item.icon}</span>
                     {!collapsed && (
-                      <span className="text-base md:text-sm font-medium">{item.label}</span>
+                      <span className={`text-base md:text-sm font-medium ${crazyModeActive && item.id !== 'snake-game' ? 'sidebar-neon-text' : ''}`}>{item.label}</span>
                     )}
                   </Link>
                 )}
@@ -375,7 +387,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
         <div className="md:hidden border-t border-gray-200 dark:border-volus-dark-700 p-2">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${crazyModeActive ? 'text-gray-500 cursor-not-allowed' : 'text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10'}`}
           >
             <svg
               className="w-5 h-5"

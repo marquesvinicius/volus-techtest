@@ -3,7 +3,19 @@ import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { applyPhoneMask, validateEmail, validatePhone } from '../utils/validation';
+import { applyPhoneMask, validateEmail, validatePhone, isCrazyModeEnabled } from '../utils/validation';
+
+const fieldComments = {
+    first_name: "Um nome forte! Vai impressionar nos relatórios.",
+    last_name: "Sobrenome de respeito. Já o vi em algum lugar?",
+    email: "Este email será o portal para novas... notificações.",
+    phone: "Não se preocupe, não vamos ligar. A não ser que seja para uma festa.",
+    old_password: "A senha antiga... uma relíquia do passado.",
+    new_password: "Uma nova senha! Que seja forte como um café de segunda-feira.",
+    new_password_confirm: "Confirme com cuidado. Ninguém gosta de ser bloqueado."
+};
+
+const defaultWittyComment = "Mantenha seus dados sempre atualizados.";
 
 const ProfilePage = () => {
   const { user, setUser: setAuthUser } = useAuth(); // Renomear para evitar conflito
@@ -21,6 +33,16 @@ const ProfilePage = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
+  const [crazyMode, setCrazyMode] = useState(false);
+  const [wittyComment, setWittyComment] = useState(defaultWittyComment);
+
+  useEffect(() => {
+    const isCrazy = isCrazyModeEnabled();
+    setCrazyMode(isCrazy);
+    if (!isCrazy) {
+        setWittyComment("Mantenha seus dados sempre atualizados.");
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -84,6 +106,18 @@ const ProfilePage = () => {
       setErrors(prev => ({...prev, phone: 'O telefone deve ter 11 dígitos.'}));
     } else {
       setErrors(prev => ({...prev, phone: null}));
+    }
+  };
+
+  const handleInputFocus = (e) => {
+    if (crazyMode) {
+      setWittyComment(fieldComments[e.target.name] || defaultWittyComment);
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (crazyMode) {
+      setWittyComment(defaultWittyComment);
     }
   };
 
@@ -158,20 +192,24 @@ const ProfilePage = () => {
       <ToastContainer position="bottom-right" autoClose={4000} hideProgressBar={false} />
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-volus-jet dark:text-volus-dark-500">Meu Perfil</h1>
-          <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">Gerencie suas informações pessoais e de segurança.</p>
+          <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Meu Perfil</h1>
+          <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+            {crazyMode ? "Onde as suas personas digitais ganham vida!" : "Gerencie suas informações pessoais e de segurança."}
+          </p>
         </div>
         
         {loading ? <p className="dark:text-volus-dark-600">Carregando perfil...</p> : (
           <>
             {/* -- Formulário de Informações Pessoais -- */}
-            <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-8">
+            <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-8 ${crazyMode ? 'pulsating-card' : ''}`}>
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500">Informações Pessoais</h2>
-                  <p className="text-sm text-volus-davys-gray dark:text-volus-dark-600 mt-1">Mantenha seus dados sempre atualizados.</p>
+                  <p className="text-sm text-volus-davys-gray dark:text-volus-dark-600 mt-1">
+                    {wittyComment}
+                  </p>
                 </div>
-                <div className="w-20 h-20 bg-volus-emerald/10 dark:bg-volus-emerald/20 rounded-full flex items-center justify-center text-volus-emerald text-3xl font-bold border-4 border-white dark:border-volus-dark-800 shadow-sm">
+                <div className={`w-20 h-20 bg-volus-emerald/10 dark:bg-volus-emerald/20 rounded-full flex items-center justify-center text-volus-emerald text-3xl font-bold border-4 border-white dark:border-volus-dark-800 shadow-sm ${crazyMode ? 'animate-spin' : ''}`}>
                   {getUserInitials()}
                 </div>
               </div>
@@ -190,21 +228,21 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Nome</label>
-                    <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                    <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   </div>
                   <div>
                     <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Sobrenome</label>
-                    <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                    <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Email</label>
-                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Telefone</label>
-                  <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handlePhoneChange} placeholder="(XX) X XXXX-XXXX" className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                  <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handlePhoneChange} onFocus={handleInputFocus} onBlur={handleInputBlur} placeholder="(XX) X XXXX-XXXX" className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
                 <div className="flex justify-end pt-2">
@@ -216,21 +254,21 @@ const ProfilePage = () => {
             </div>
 
             {/* -- Formulário de Alteração de Senha -- */}
-            <div className="bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-8">
+            <div className={`bg-white dark:bg-volus-dark-800 rounded-2xl shadow-card border border-white/60 dark:border-volus-dark-700 p-8 ${crazyMode ? 'pulsating-card' : ''}`}>
               <h2 className="text-xl font-semibold text-volus-jet dark:text-volus-dark-500 mb-6">Alterar Senha</h2>
               <form onSubmit={handlePasswordChange} data-formname="passwordData" className="space-y-4">
                 <div>
                   <label htmlFor="old_password" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Senha Atual</label>
-                  <input type="password" name="old_password" id="old_password" value={passwordData.old_password} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                  <input type="password" name="old_password" id="old_password" value={passwordData.old_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Nova Senha</label>
-                    <input type="password" name="new_password" id="new_password" value={passwordData.new_password} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                    <input type="password" name="new_password" id="new_password" value={passwordData.new_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                   </div>
                   <div>
                     <label htmlFor="new_password_confirm" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Confirmar Nova Senha</label>
-                    <input type="password" name="new_password_confirm" id="new_password_confirm" value={passwordData.new_password_confirm} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                    <input type="password" name="new_password_confirm" id="new_password_confirm" value={passwordData.new_password_confirm} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                   </div>
                 </div>
                 <div className="flex justify-end pt-2">
