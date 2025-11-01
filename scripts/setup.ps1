@@ -9,6 +9,18 @@ function Ensure-Python {
     Write-Host "[0/4] Verificando Python..." -ForegroundColor Yellow
     $pythonExists = Get-Command python -ErrorAction SilentlyContinue
     if ($pythonExists) {
+        if ($pythonExists.Source -like "*WindowsApps*") {
+            Write-Host "------------------------------------------------------------------" -ForegroundColor Red
+            Write-Host "PROBLEMA DETECTADO: Atalho da Microsoft Store para Python" -ForegroundColor Red
+            Write-Host "O 'python.exe' encontrado é apenas um atalho e não funcionará." -ForegroundColor Yellow
+            Write-Host "Siga os passos para desativá-lo:" -ForegroundColor Yellow
+            Write-Host "1. Pressione a tecla Windows e digite 'Gerenciar aliases de execução de aplicativo'." -ForegroundColor Yellow
+            Write-Host "2. Na lista, encontre 'Instalador de Aplicativo python.exe' e 'python3.exe'." -ForegroundColor Yellow
+            Write-Host "3. Desative os dois." -ForegroundColor Yellow
+            Write-Host "4. Após desativar, feche e abra um novo terminal e rode o script novamente." -ForegroundColor Yellow
+            Write-Host "------------------------------------------------------------------" -ForegroundColor Red
+            exit 1
+        }
         Write-Host "Python encontrado: $($pythonExists.Source)" -ForegroundColor Green
         return
     }

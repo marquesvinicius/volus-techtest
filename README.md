@@ -50,11 +50,32 @@ Este repositório reúne a solução fullstack desenvolvida para a prova técnic
 - npm 10+
 
 ### Setup rápido (PowerShell no Windows)
-1. Abra o PowerShell na raiz do projeto.
+
+0. Clone o repositório:
+   ```bash
+   git clone https://github.com/marquesvinicius/volus-techtest.git
+   cd volus-techtest
+   ```
+1. Abra o PowerShell na RAIZ do projeto (pasta volus-techtest).
 2. Execute `./scripts/setup.ps1` (instala dependências, aplica migrações, carrega produtos e garante o usuário `Volus`).
 3. Rode `./scripts/start.ps1` para abrir automaticamente duas janelas: backend (`http://localhost:8000`) e frontend (`http://localhost:5173`).
    - Use `./scripts/start.ps1 -SkipSetup` se o ambiente já estiver configurado.
    - Os scripts funcionam mesmo fora do Windows, desde que executados via PowerShell 7+.
+
+   ### Solução de Problemas Comuns
+
+#### Erro: `Python não foi encontrado` ou `Couldn't import Django` no Windows
+
+- **Causa:** O Windows utiliza atalhos para a Microsoft Store que se passam pelo `python.exe`. Isso confunde o script, que precisa instalar a versão correta (Python 3.12) para criar o ambiente virtual.
+
+- **Solução:** Desabilitar os "Aliases de Execução de Aplicativo" para permitir que o script gerencie a instalação.
+  1. No menu Iniciar, pesquise por **"Gerenciar aliases de execução de aplicativo"** e abra.
+  2. Na lista, encontre `python.exe` e `python3.exe` (ambos de "Instalador de Aplicativo").
+  3. **Desative os dois.**
+  4. Feche o terminal e abra um novo. Rode `.\scripts\setup.ps1` novamente. O script agora vai identificar a ausência do Python e tentar instalar a versão correta automaticamente.
+
+![Desabilitando os aliases do Python](https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbo9z0xvny36jw3orbgv4.png)
+
 
 ### Setup manual
 #### Backend (Django + DRF)
@@ -77,6 +98,7 @@ npm run dev
 ```
 - O Vite iniciará em `http://localhost:5173`. As rotas privadas redirecionam para `/login` se não houver JWT válido.
 - Para build de produção execute `npm run build` seguido de `npm run preview`.
+
 
 ### Usuários e Login
 - Usuário demo garantido pelo comando `setup_demo`: `Volus` / `volus123` (com acesso ao `/admin`).
