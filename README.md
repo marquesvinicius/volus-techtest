@@ -49,20 +49,26 @@ Este repositório reúne a solução fullstack desenvolvida para a prova técnic
 - Node.js 20+
 - npm 10+
 
-### Backend (Django + DRF)
+### Setup rápido (PowerShell no Windows)
+1. Abra o PowerShell na raiz do projeto.
+2. Execute `./scripts/setup.ps1` (instala dependências, aplica migrações, carrega produtos e garante o usuário `Volus`).
+3. Rode `./scripts/start.ps1` para abrir automaticamente duas janelas: backend (`http://localhost:8000`) e frontend (`http://localhost:5173`).
+   - Use `./scripts/start.ps1 -SkipSetup` se o ambiente já estiver configurado.
+   - Os scripts funcionam mesmo fora do Windows, desde que executados via PowerShell 7+.
+
+### Setup manual
+#### Backend (Django + DRF)
 ```bash
 cd backend
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py loaddata core/fixtures/products.json
-python manage.py createsuperuser  # opcional para acessar /admin
+python manage.py setup_demo    # migrações + fixtures (idempotente)
 python manage.py runserver
 ```
 > A API sobe em `http://localhost:8000`. Ajuste `ALLOWED_HOSTS` e configurações de banco se for publicar.
 
-### Frontend (React + Vite + Tailwind)
+#### Frontend (React + Vite + Tailwind)
 ```bash
 cd frontend
 npm install
@@ -70,10 +76,11 @@ echo "VITE_API_URL=http://localhost:8000" > .env.local
 npm run dev
 ```
 - O Vite iniciará em `http://localhost:5173`. As rotas privadas redirecionam para `/login` se não houver JWT válido.
-- Para build de produção: `npm run build` e `npm run preview`.
+- Para build de produção execute `npm run build` seguido de `npm run preview`.
 
 ### Usuários e Login
-- Registre-se via `/register` (o fluxo já realiza login automático em seguida) ou use o `createsuperuser` do Django.
+- Usuário demo garantido pelo comando `setup_demo`: `Volus` / `volus123` (com acesso ao `/admin`).
+- Registre-se via `/register` se quiser testar o fluxo completo de onboarding.
 - Tokens são armazenados em `localStorage` e renovados via endpoint `/api/auth/refresh/`.
 
 ## API REST (resumo)
@@ -110,12 +117,6 @@ As imagens usadas na defesa do projeto estão em `docs/screenshots/`:
 - `products-page.png`, `categorias-filter-page.png`, `estoque-page.png`
 - `relatorios-page.png`, `login-page.png`
 
-## Próximos Passos / Backlog
-- Cobrir o domínio com testes automatizados (Pytest/DRF tests e React Testing Library).
-- Revisar o interceptor de refresh do Axios para reutilizar o endpoint `/api/auth/refresh/` (hoje há fallback manual no serviço de auth).
-- Finalizar o cadastro de preferências de estoque (`StockSettings`) iniciado na migração `0002` para permitir thresholds personalizados por usuário.
-- Disponibilizar docker-compose para facilitar setup local e CI.
-- Instrumentar monitoramento (Sentry, LogRocket) e métricas reais provenientes do backend.
 
 ---
 Projeto construído com foco em escalabilidade, clareza e aderência ao perfil da vaga. Qualquer dúvida ou sugestão, fique à vontade para abrir uma issue ou entrar em contato.
