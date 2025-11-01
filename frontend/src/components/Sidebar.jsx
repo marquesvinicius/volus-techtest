@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isCrazyModeEnabled } from '../utils/validation';
+import SnakeGame from './SnakeGame'; // Importe o jogo
 
 const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -9,6 +10,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
   const [crazyModeActive, setCrazyModeActive] = useState(false);
   const [menuItemClicks, setMenuItemClicks] = useState({});
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [showSnakeGame, setShowSnakeGame] = useState(false); // Estado para o jogo
   const location = useLocation();
   const { logout } = useAuth();
 
@@ -66,6 +68,7 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     if (itemId === 'dashboard' && (menuItemClicks.dashboard || 0) >= 4) {
       setShowEasterEgg(true);
       setTimeout(() => setShowEasterEgg(false), 3000);
+      setMenuItemClicks(prev => ({ ...prev, [itemId]: 0 }));
     }
   };
 
@@ -179,6 +182,28 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
     },
   ];
 
+  if (crazyModeActive) {
+    menuItems.push({
+      id: 'snake-game',
+      label: 'Jogo da Cobrinha',
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="hover:animate-spin"
+        >
+          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+          <path d="M15.5 8.5c-.828 0-1.5-.672-1.5-1.5s.672-1.5 1.5-1.5 1.5.672 1.5 1.5-.672 1.5-1.5 1.5z" />
+          <path d="M8.5 8.5c-.828 0-1.5-.672-1.5-1.5s.672-1.5 1.5-1.5 1.5.672 1.5 1.5-.672 1.5-1.5 1.5z" />
+          <path d="M16 14s-1.5 2-4 2-4-2-4-2" />
+        </svg>
+      ),
+      action: () => setShowSnakeGame(true),
+    });
+  }
+
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -218,6 +243,9 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
           </div>
         </div>
       )}
+
+      {/* Snake Game Modal */}
+      {showSnakeGame && <SnakeGame onClose={() => setShowSnakeGame(false)} />}
 
       {/* Sidebar - Mobile sempre expandido */}
       <aside
@@ -322,6 +350,10 @@ const Sidebar = ({ isOpen, onClose, onCollapseChange }) => {
                     className={getMenuItemClasses(item, isActive(item.path))}
                     title={collapsed ? item.label : ''}
                     onClick={(e) => {
+                      if (item.action) {
+                        e.preventDefault();
+                        item.action();
+                      }
                       onClose();
                       handleMenuItemClick(item.id);
                     }}

@@ -90,8 +90,8 @@ const Register = () => {
     setLoading(true);
     
     try {
-      // Preparar dados para envio (remover confirmação de senha)
-      const { password_confirm, ...userData } = formData;
+      // Preparar dados para envio
+      const userData = { ...formData };
       
       // Remover máscara do telefone se preenchido
       if (userData.phone) {
