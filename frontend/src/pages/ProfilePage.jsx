@@ -228,21 +228,21 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Nome</label>
-                    <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                    <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   </div>
                   <div>
                     <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Sobrenome</label>
-                    <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                    <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Email</label>
-                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Telefone</label>
-                  <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handlePhoneChange} onFocus={handleInputFocus} onBlur={handleInputBlur} placeholder="(XX) X XXXX-XXXX" className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
+                  <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handlePhoneChange} onFocus={handleInputFocus} onBlur={handleInputBlur} placeholder="(XX) X XXXX-XXXX" className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" />
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
                 <div className="flex justify-end pt-2">
@@ -259,16 +259,16 @@ const ProfilePage = () => {
               <form onSubmit={handlePasswordChange} data-formname="passwordData" className="space-y-4">
                 <div>
                   <label htmlFor="old_password" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Senha Atual</label>
-                  <input type="password" name="old_password" id="old_password" value={passwordData.old_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                  <input type="password" name="old_password" id="old_password" value={passwordData.old_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Nova Senha</label>
-                    <input type="password" name="new_password" id="new_password" value={passwordData.new_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                    <input type="password" name="new_password" id="new_password" value={passwordData.new_password} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                   </div>
                   <div>
                     <label htmlFor="new_password_confirm" className="block text-sm font-medium text-gray-700 dark:text-volus-dark-600">Confirmar Nova Senha</label>
-                    <input type="password" name="new_password_confirm" id="new_password_confirm" value={passwordData.new_password_confirm} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
+                    <input type="password" name="new_password_confirm" id="new_password_confirm" value={passwordData.new_password_confirm} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-volus-emerald dark:text-volus-dark-500" required />
                   </div>
                 </div>
                 <div className="flex justify-end pt-2">

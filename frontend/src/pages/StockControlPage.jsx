@@ -120,7 +120,7 @@ const StockControlPage = () => {
                             value={editingValue}
                             onChange={(e) => setEditingValue(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSaveStock(product.id)}
-                            className="w-20 px-2 py-1 border border-gray-300 dark:border-volus-dark-600 dark:bg-volus-dark-900 rounded text-center focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
+                            className="w-20 px-2 py-1 border border-gray-300 bg-white dark:border-volus-dark-600 dark:bg-volus-dark-900 rounded text-center focus:outline-none focus:ring-2 focus:ring-volus-emerald/50"
                             autoFocus
                             disabled={saving}
                           />

@@ -16,6 +16,7 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null); // null | product
   const [newProduct, setNewProduct] = useState({
     name: '',
     code: '',
@@ -163,6 +164,22 @@ const ProductList = () => {
       return;
     }
     
+    // Se estiver editando
+    if (editingProduct) {
+      try {
+        const updatedProduct = await productService.updateProduct(editingProduct.id, newProduct);
+        setProducts(prev => prev.map(p => p.id === editingProduct.id ? updatedProduct : p));
+        toast.success(`Produto "${updatedProduct.name}" atualizado com sucesso!`);
+        setIsModalOpen(false);
+        setEditingProduct(null);
+      } catch (error) {
+        console.error('Erro ao atualizar produto:', error);
+        toast.error('Erro ao atualizar produto.');
+      }
+      return;
+    }
+
+    // Se estiver criando
     try {
       const createdProduct = await productService.createProduct(newProduct);
       // Atualiza a lista de produtos no estado para refletir a adição
@@ -174,6 +191,39 @@ const ProductList = () => {
       console.error('Erro ao criar produto:', error);
       toast.error('Erro ao criar produto. Verifique os dados e tente novamente.');
     }
+  };
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      code: product.code,
+      price: product.price,
+      category: product.category,
+      subcategory: product.subcategory,
+      stock: product.stock,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (productId) => {
+    // Adicionar um modal de confirmação customizado seria ideal aqui
+    if (window.confirm('Tem certeza que deseja excluir este produto?')) {
+      try {
+        await productService.deleteProduct(productId);
+        setProducts(prev => prev.filter(p => p.id !== productId));
+        toast.success('Produto excluído com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir produto:', error);
+        toast.error('Erro ao excluir produto.');
+      }
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+    setNewProduct({ name: '', code: '', price: '', category: '', subcategory: '', stock: '' });
   };
 
   const formatPrice = (price) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -232,7 +282,7 @@ const ProductList = () => {
     <>
       <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} />
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className={`text-3xl font-bold text-volus-jet dark:text-volus-dark-500 ${crazyMode ? 'crazy-text-shadow' : ''}`}>Catálogo de Produtos</h1>
             <p className="text-volus-davys-gray dark:text-volus-dark-600 mt-1">
@@ -241,7 +291,7 @@ const ProductList = () => {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2.5 bg-volus-emerald text-white font-semibold rounded-lg hover:bg-volus-emerald/90 transition shadow-sm"
+            className="w-full md:w-auto px-5 py-2.5 bg-volus-emerald text-white font-semibold rounded-lg hover:bg-volus-emerald/90 transition shadow-sm"
           >
             Adicionar Produto
           </button>
@@ -357,6 +407,7 @@ const ProductList = () => {
                     currentOrder={sortOrder}
                     onSort={handleSort}
                   />
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-volus-jet dark:text-volus-dark-500">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -379,11 +430,31 @@ const ProductList = () => {
                           {product.stock}
                         </span>
                       </td>
+                      <td className="px-6 py-4 text-sm">
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => handleEdit(product)} 
+                            className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-500/10 rounded-md transition" 
+                            aria-label="Editar"
+                            title="Editar"
+                          >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(product.id)} 
+                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-500/10 rounded-md transition" 
+                            aria-label="Excluir"
+                            title="Excluir"
+                          >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-volus-davys-gray dark:text-volus-dark-600">
+                    <td colSpan="7" className="px-6 py-12 text-center text-volus-davys-gray dark:text-volus-dark-600">
                       Nenhum produto encontrado com os filtros aplicados
                     </td>
                   </tr>
@@ -396,37 +467,37 @@ const ProductList = () => {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-volus-dark-800 rounded-lg shadow-xl p-8 w-full max-w-2xl">
-              <h2 className="text-2xl font-bold text-volus-jet dark:text-volus-dark-500 mb-6">Adicionar Novo Produto</h2>
+              <h2 className="text-2xl font-bold text-volus-jet dark:text-volus-dark-500 mb-6">{editingProduct ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
               <form onSubmit={handleAddProduct} className="space-y-4">
                 
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Nome do Produto</label>
-                  <input type="text" name="name" id="name" value={newProduct.name} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
+                  <input type="text" name="name" id="name" value={newProduct.name} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="code" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">SKU (Código)</label>
-                    <input type="text" name="code" id="code" value={newProduct.code} onChange={handleCodeChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
+                    <input type="text" name="code" id="code" value={newProduct.code} onChange={handleCodeChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                     {codeError && <p className="text-red-500 text-xs mt-1">{codeError}</p>}
                   </div>
                   <div>
                     <label htmlFor="price" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Preço (R$)</label>
-                    <input type="number" name="price" id="price" step="0.01" value={newProduct.price} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
+                    <input type="number" name="price" id="price" step="0.01" value={newProduct.price} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="category" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Categoria</label>
-                    <select name="category" id="category" value={newProduct.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required>
+                    <select name="category" id="category" value={newProduct.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required>
                       <option value="">Selecione...</option>
                       {categories.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
                     </select>
                   </div>
                    <div>
                     <label htmlFor="subcategory" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Subcategoria</label>
-                    <select name="subcategory" id="subcategory" value={newProduct.subcategory} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" disabled={!newProduct.category}>
+                    <select name="subcategory" id="subcategory" value={newProduct.subcategory} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" disabled={!newProduct.category}>
                       <option value="">Selecione...</option>
                       {subcategoriesForModal.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                     </select>
@@ -435,11 +506,11 @@ const ProductList = () => {
                 
                  <div>
                     <label htmlFor="stock" className="block text-sm font-medium text-volus-jet dark:text-volus-dark-500 mb-1">Estoque</label>
-                    <input type="number" name="stock" id="stock" value={newProduct.stock} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
+                    <input type="number" name="stock" id="stock" value={newProduct.stock} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 bg-white dark:border-volus-dark-700 dark:bg-volus-dark-900 rounded-md focus:outline-none focus:ring-2 focus:ring-volus-emerald/50 dark:text-volus-dark-500" required />
                   </div>
 
                 <div className="flex justify-end gap-4 pt-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-100 dark:bg-volus-dark-700 text-gray-700 dark:text-volus-dark-500 rounded-md hover:bg-gray-200 dark:hover:bg-volus-dark-600">Cancelar</button>
+                  <button type="button" onClick={handleModalClose} className="px-4 py-2 bg-gray-100 dark:bg-volus-dark-700 text-gray-700 dark:text-volus-dark-500 rounded-md hover:bg-gray-200 dark:hover:bg-volus-dark-600">Cancelar</button>
                   <button type="submit" className="px-6 py-2 bg-volus-emerald text-white rounded-md hover:bg-volus-emerald/90">Salvar Produto</button>
                 </div>
               </form>
